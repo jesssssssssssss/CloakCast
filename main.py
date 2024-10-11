@@ -5,7 +5,7 @@ import ttkbootstrap as ttk
 import customtkinter as ctk
 from customtkinter import FontManager
 
-from embedPage import EmbedPage
+from pages import HomePage, EmbedPage
 
 
 class MainApp(ctk.CTk):
@@ -30,19 +30,7 @@ class MainApp(ctk.CTk):
         frame = self.frames[page_class]
         frame.tkraise()
 
-class HomePage(ctk.CTkFrame):
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-        self.controller = controller
 
-        label = ctk.CTkLabel(self, text="CloakCast", font=("Lalezar", 70), text_color='#a63a50')
-        label.pack(pady=20)
-
-        embed_button = ctk.CTkButton(self, text="Embed", command=lambda: controller.show_frame(EmbedPage))
-        embed_button.pack(pady=10) 
-
-        #extract_button = ctk.CTkButton(self, text="Extract", command=lambda: controller.show_frame(ExtractPage))
-        #extract_button.pack(pady=10)
 
 if __name__ == "__main__":
     app = MainApp()

@@ -2,11 +2,23 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import font
 import ttkbootstrap as ttk
-import customtkinter
 import customtkinter as ctk
-from customtkinter import CTkFont
+import customtkinter
+from customtkinter import FontManager
 
-# currently moving the design stuff for embedpage from the OG file to this one, copying over all of dannielles work but altering the structure. Keep doing this! Then work on the main page again, also sync to github
+class HomePage(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        label = ctk.CTkLabel(self, text="CloakCast", font=("Lalezar", 70), text_color='#a63a50')
+        label.pack(pady=20)
+
+        embed_button = ctk.CTkButton(self, text="Embed", command=lambda: controller.show_frame(EmbedPage))
+        embed_button.pack(pady=10) 
+
+        #extract_button = ctk.CTkButton(self, text="Extract", command=lambda: controller.show_frame(ExtractPage))
+        #extract_button.pack(pady=10)
 
 class EmbedPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -76,10 +88,11 @@ class EmbedPage(ctk.CTkFrame):
 
         hiddenDataFrame.pack(side='left')
 
-
-
+        
         #back_button = ctk.CTkButton(embedPage, text="Back to Home", command=lambda: controller.show_frame(HomePage))
         #back_button.pack(pady=10)
+
+
 
 
 # this is the code you had before, most of it is the same, but I've left this version here incase you want to look over it to see what the differences are! The main alteration is that it's been moved into a class.
