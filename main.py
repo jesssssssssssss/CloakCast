@@ -1,9 +1,9 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import font
-import ttkbootstrap as ttk
+#import tkinter as tk
+#from tkinter import ttk
+#from tkinter import font
+#import ttkbootstrap as ttk
 import customtkinter as ctk
-from customtkinter import FontManager
+
 
 from pages import HomePage, EmbedPage
 
