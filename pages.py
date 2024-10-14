@@ -5,13 +5,19 @@ import ttkbootstrap as ttk '''
 import customtkinter as ctk
 import customtkinter
 
+# I had to remove the tkinter imports, because they were overriding the CTK fomatting! So there are a few lines which still need converting
 
 class HomePage(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent)
+        super().__init__(parent, fg_color="#FEFCFB")
         self.controller = controller
 
-        homePageContent = ctk.CTkFrame(master = self, fg_color='White')
+       
+        sidebar = ctk.CTkFrame(self, fg_color="#393839", width=100)
+        sidebar.pack(side="left", fill="y")
+        sidebar.pack_propagate(False)  # This prevents the frame from shrinking
+
+        homePageContent = ctk.CTkFrame(master = self, fg_color='White', bg_color='#FEFCFB') # this is the content window
         homePageContent.pack(padx=500, pady=250)
 
 
@@ -20,6 +26,9 @@ class HomePage(ctk.CTkFrame):
 
         embedButton = ctk.CTkButton(homePageContent, text="Embed", command=lambda: controller.show_frame(EmbedPage))
         embedButton.pack(pady=10) 
+
+        extractButton = ctk.CTkButton(homePageContent, text="Extract", command=lambda: controller.show_frame(EmbedPage))
+        extractButton.pack(pady=10) 
 
         #extract_button = ctk.CTkButton(self, text="Extract", command=lambda: controller.show_frame(ExtractPage))
         #extract_button.pack(pady=10)
@@ -43,13 +52,13 @@ class EmbedPage(ctk.CTkFrame):
         coverMedia_label.pack()
 
         #Audio upload placeholder
-        audioUpload_label = ctk.CTkLabel(coverMediaFrame, text='Upload Audio', font=('Calibri', 20)) # , borderwidth=8, relief='solid' - figure our how to use in ctk
+        audioUpload_label = ctk.CTkLabel(coverMediaFrame, text='Upload Audio', font=('Calibri', 20)) #  borderwidth=8, relief='solid' - figure our how to use in ctk
         audioUpload_label.pack(pady=10)
 
         #audioFile frame placeholder
         audioFileFrame = ctk.CTkFrame(master=coverMediaFrame) #frame
 
-        audioFile_label = ctk.CTkLabel(master=audioFileFrame, width=30) #File display placeholder -- these: borderwidth=8, relief='solid' - figure our how to use in ctk
+        audioFile_label = ctk.CTkLabel(master=audioFileFrame, width=30) #File display placeholder --        # these: borderwidth=8, relief='solid' - figure our how to use in ctk
         deleteButton = ctk.CTkButton(master=audioFileFrame, text='x', width=3) #Trash icon button placeholder
 
         #Calling 
