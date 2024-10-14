@@ -4,6 +4,7 @@ from tkinter import font
 import ttkbootstrap as ttk '''
 import customtkinter as ctk
 import customtkinter
+from PIL import Image
 
 # I had to remove the tkinter imports, because they were overriding the CTK fomatting! So there are a few lines which still need converting
 
@@ -17,6 +18,12 @@ class HomePage(ctk.CTkFrame):
         sidebar.pack(side="left", fill="y")
         sidebar.pack_propagate(False)  # This prevents the frame from shrinking
 
+        logo = ctk.CTkImage(light_image=Image.open("C:/Users/GGPC/Desktop/CloakCastApp/CloakCast/Images/Logo.png"),
+                                  dark_image=Image.open("C:/Users/GGPC/Desktop/CloakCastApp/CloakCast/Images/Logo.png"),
+                                  size=(80, 80))  
+        logo_label = ctk.CTkLabel(sidebar, image=logo, text="")
+        logo_label.pack(pady=(10, 0))
+
         homePageContent = ctk.CTkFrame(master = self, fg_color='White', bg_color='#FEFCFB') # this is the content window
         homePageContent.pack(padx=500, pady=250)
 
@@ -27,7 +34,7 @@ class HomePage(ctk.CTkFrame):
         embedButton = ctk.CTkButton(homePageContent, text="Embed", command=lambda: controller.show_frame(EmbedPage))
         embedButton.pack(pady=10) 
 
-        extractButton = ctk.CTkButton(homePageContent, text="Extract", command=lambda: controller.show_frame(EmbedPage))
+        extractButton = ctk.CTkButton(homePageContent, text="Extract", command=lambda: controller.show_frame(ExtractPage))
         extractButton.pack(pady=10) 
 
         #extract_button = ctk.CTkButton(self, text="Extract", command=lambda: controller.show_frame(ExtractPage))
@@ -105,6 +112,23 @@ class EmbedPage(ctk.CTkFrame):
         
         #back_button = ctk.CTkButton(embedPage, text="Back to Home", command=lambda: controller.show_frame(HomePage))
         #back_button.pack(pady=10)
+
+class ExtractPage(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+
+        ExtractPageContent = ctk.CTkFrame(master = self, fg_color='White') # this is the content window
+        ExtractPageContent.pack(padx=500, pady=250)
+
+        label = ctk.CTkLabel(ExtractPageContent, text="Extract Page", font=customtkinter.CTkFont(family='Calibri', size=30))
+        label.pack(pady=20)
+
+        #Cover Media Frame
+        coverMediaFrame = ctk.CTkFrame(ExtractPageContent)
+        
+
+        coverMedia_label = ctk.CTkLabel(ExtractPageContent, text='Cover Media', font=customtkinter.CTkFont(family='Calibri', size=30))
+        coverMedia_label.pack()
 
 
 

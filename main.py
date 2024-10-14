@@ -3,9 +3,9 @@
 #from tkinter import font
 #import ttkbootstrap as ttk
 import customtkinter as ctk
+from PIL import Image
 
-
-from pages import HomePage, EmbedPage
+from pages import HomePage, EmbedPage, ExtractPage
 
 
 class MainApp(ctk.CTk):
@@ -20,7 +20,7 @@ class MainApp(ctk.CTk):
 
         self.frames = {}
 
-        for F in (HomePage, EmbedPage): # Add later: "ExtractPage"
+        for F in (HomePage, EmbedPage, ExtractPage): # Add later: "ExtractPage"
             frame = F(self.container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
