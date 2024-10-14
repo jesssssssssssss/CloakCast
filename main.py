@@ -12,9 +12,10 @@ class MainApp(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("CloakCast")
-        self.geometry("1500x1000")
+        #self.geometry("1500x1000")
+    
 
-        self.container = ctk.CTkFrame(self)
+        self.container = ctk.CTkFrame(self, fg_color="Black")
         self.container.pack(fill="both", expand=True)
 
         self.frames = {}
