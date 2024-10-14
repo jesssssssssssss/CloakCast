@@ -5,6 +5,7 @@ import ttkbootstrap as ttk '''
 import customtkinter as ctk
 import customtkinter
 from PIL import Image
+import os
 
 # I had to remove the tkinter imports, because they were overriding the CTK fomatting! So there are a few lines which still need converting
 
@@ -18,9 +19,16 @@ class HomePage(ctk.CTkFrame):
         sidebar.pack(side="left", fill="y")
         sidebar.pack_propagate(False)  # This prevents the frame from shrinking
 
-        logo = ctk.CTkImage(light_image=Image.open("C:/Users/GGPC/Desktop/CloakCastApp/CloakCast/Images/Logo.png"),
-                                  dark_image=Image.open("C:/Users/GGPC/Desktop/CloakCastApp/CloakCast/Images/Logo.png"),
-                                  size=(80, 80))  
+        # Get the current directory of this script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Define the relative path to the image
+        image_path = os.path.join(current_dir, "Images", "Logo.png")
+
+# Create the CTkImage with the correct image path
+        logo = ctk.CTkImage(light_image=Image.open(image_path), size=(80, 80))
+
+# Create a label for the logo
         logo_label = ctk.CTkLabel(sidebar, image=logo, text="")
         logo_label.pack(pady=(10, 0))
 
