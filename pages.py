@@ -8,67 +8,130 @@ from PIL import Image
 import os
 
 # I had to remove the tkinter imports, because they were overriding the CTK fomatting! So there are a few lines which still need converting
+# *** ********************
 
 class HomePage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, fg_color="#FEFCFB")
         self.controller = controller
 
-       
-        sidebar = ctk.CTkFrame(self, fg_color="#393839", width=100)
-        sidebar.pack(side="left", fill="y")
-        sidebar.pack_propagate(False)  # This prevents the frame from shrinking
+        # Configuring the grid
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
+        # Sidebar
+        sidebar = ctk.CTkFrame(self, fg_color="#393839", width=100)
+        sidebar.grid(row=0, column=0, sticky="nsew")
+        sidebar.grid_rowconfigure(0, weight=1)
+        sidebar.grid_propagate(False)  # Prevents the frame from shrinking
+
+        # Content frame wrapper (for centering the content frame)
+        contentWrapper = ctk.CTkFrame(self, fg_color="transparent")
+        contentWrapper.grid(row=0, column=1, sticky="nsew")
+        contentWrapper.grid_columnconfigure(0, weight=1)
+        contentWrapper.grid_rowconfigure(0, weight=1)
+
+        # Outer content frame (for outer border)
+        outerContentFrame = ctk.CTkFrame(contentWrapper, fg_color="#FEFCFB", corner_radius=10)
+        outerContentFrame.grid(row=0, column=0, padx=20, pady=20)
+        outerContentFrame.grid_columnconfigure(1, weight=1)
+        outerContentFrame.grid_rowconfigure(1, weight=1)
+
+        # Outer borders
+        outerBottomBorder = ctk.CTkFrame(outerContentFrame, fg_color="#F2E2E5", height=5)
+        outerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
+
+        # will likely remove outer left/right borders permanently
+        outer_right_border = ctk.CTkFrame(outerContentFrame, fg_color="#F5E8EA", width=3)
+        #outer_right_border.grid(row=0, column=2, rowspan=3, sticky="ns")
+
+        # Content frame 
+        contentFrame = ctk.CTkFrame(outerContentFrame, fg_color="#FEFCFB", corner_radius=10)
+        contentFrame.grid(row=1, column=1, sticky="nsew")
+        contentFrame.grid_columnconfigure(1, weight=1)
+        contentFrame.grid_rowconfigure(1, weight=1)
+
+        # Setting a fixed size for the content frame here
+        contentFrame.configure(width=800, height=600)
+        contentFrame.grid_propagate(False)  # This prevents the frame from shrinking
+
+        innerBottomBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", height=8)
+        innerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
+
+        innerLeftBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
+        innerLeftBorder.grid(row=0, column=0, rowspan=3, sticky="ns")
+
+        innerRightBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
+        innerRightBorder.grid(row=0, column=2, rowspan=3, sticky="ns")
+
+        # Home page content
+        homePageContent = ctk.CTkFrame(contentFrame, fg_color='White', corner_radius=10)
+        homePageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
+        homePageContent.grid_columnconfigure((0, 1), weight=1)
+
+        #Logo changes:
         # Get the current directory of this script
         current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Define the relative path to the image
+        imagePath = os.path.join(current_dir, "Images", "Logo.png")
+        # Create the CTkImage with the correct image path
+        logo = ctk.CTkImage(light_image=Image.open(imagePath), size=(80, 80))
+        # Create a label for the logo
+        logoLabel = ctk.CTkLabel(sidebar, image=logo, text="")
+        logoLabel.grid(row=0, column=0, pady=(0, 0))
 
-# Define the relative path to the image
-        image_path = os.path.join(current_dir, "Images", "Logo.png")
+        # CloakCast label
+        label = ctk.CTkLabel(homePageContent, text="CloakCast", font=("Lalezar", 70), text_color="#a63a50", fg_color="white")
+        label.grid(row=0, column=0, padx=20, pady=20, sticky="ew", columnspan=2)
 
-# Create the CTkImage with the correct image path
-        logo = ctk.CTkImage(light_image=Image.open(image_path), size=(80, 80))
+        # Embed button
+        embedButton = ctk.CTkButton(
+            homePageContent, 
+            text="Embed", 
+            command=lambda: controller.show_frame(EmbedPage),
+            text_color='White',
+            fg_color='#393839',
+            corner_radius=10,
+            font=('Lalezar', 30))
+        embedButton.grid(row=1, column=0, padx=20, pady=20, sticky="ew")
 
-# Create a label for the logo
-        logo_label = ctk.CTkLabel(sidebar, image=logo, text="")
-        logo_label.pack(pady=(10, 0))
+        # Extract button
+        extractButton = ctk.CTkButton(            
+            homePageContent, 
+            text="Extract", 
+            command=lambda: controller.show_frame(ExtractPage),
+            text_color='White',
+            fg_color='#393839',
+            corner_radius=10,
+            font=('Lalezar', 30))
+        extractButton.grid(row=1, column=1, padx=20, pady=20, sticky="ew")
 
-        homePageContent = ctk.CTkFrame(master = self, fg_color='White', bg_color='#FEFCFB') # this is the content window
-        homePageContent.pack(padx=500, pady=250)
-
-
-        label = ctk.CTkLabel(homePageContent, text="CloakCast", font=("Lalezar", 70), text_color=("#a63a50", "#a63a50"), fg_color="white")
-        label.pack(pady=20)
-
-        embedButton = ctk.CTkButton(homePageContent, text="Embed", command=lambda: controller.show_frame(EmbedPage))
-        embedButton.pack(pady=10) 
-
-        extractButton = ctk.CTkButton(homePageContent, text="Extract", command=lambda: controller.show_frame(ExtractPage))
-        extractButton.pack(pady=10) 
-
-        #extract_button = ctk.CTkButton(self, text="Extract", command=lambda: controller.show_frame(ExtractPage))
-        #extract_button.pack(pady=10)
+        #extractButton = ctk.CTkButton(self, text="Extract", command=lambda: controller.show_frame(ExtractPage))
+        #extractButton.pack(pady=10)
         # we can add these later
+
+
 
 class EmbedPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
 
         embedPageContent = ctk.CTkFrame(master = self, fg_color='White') # this is the content window
-        embedPageContent.pack(padx=500, pady=250)
+        #embedPageContent.pack(padx=500, pady=250)
 
         label = ctk.CTkLabel(embedPageContent, text="Embed Page", font=customtkinter.CTkFont(family='Calibri', size=30))
-        label.pack(pady=20)
+       # label.pack(pady=20)
 
         #Cover Media Frame
         coverMediaFrame = ctk.CTkFrame(embedPageContent)
         
 
         coverMedia_label = ctk.CTkLabel(embedPageContent, text='Cover Media', font=customtkinter.CTkFont(family='Calibri', size=30))
-        coverMedia_label.pack()
+        #coverMedia_label.pack()
 
         #Audio upload placeholder
         audioUpload_label = ctk.CTkLabel(coverMediaFrame, text='Upload Audio', font=('Calibri', 20)) #  borderwidth=8, relief='solid' - figure our how to use in ctk
-        audioUpload_label.pack(pady=10)
+       #audioUpload_label.pack(pady=10)
 
         #audioFile frame placeholder
         audioFileFrame = ctk.CTkFrame(master=coverMediaFrame) #frame
@@ -77,11 +140,11 @@ class EmbedPage(ctk.CTkFrame):
         deleteButton = ctk.CTkButton(master=audioFileFrame, text='x', width=3) #Trash icon button placeholder
 
         #Calling 
-        audioFile_label.pack(side='left')
-        deleteButton.pack(side='left')
-        audioFileFrame.pack()
+       # audioFile_label.pack(side='left')
+        #deleteButton.pack(side='left')
+        #audioFileFrame.pack()
         #Cover frame
-        coverMediaFrame.pack(side='left')
+        #coverMediaFrame.pack(side='left')
 
         #Hidden Data Frame
         hiddenDataFrame = ctk.CTkFrame(master=embedPageContent)
@@ -99,10 +162,10 @@ class EmbedPage(ctk.CTkFrame):
         fileUpload_label = ctk.CTkLabel(master=hiddenDataFrame, text='Upload File', font=('Calibri', 20)) # , borderwidth=8, relief='solid'
 
         #Calling
-        hiddenData_label.pack()
-        input.pack()
-        orLabel.pack()
-        fileUpload_label.pack()
+       # hiddenData_label.pack()
+       # input.pack()
+       # orLabel.pack()
+       # fileUpload_label.pack()
 
         #File frame placeholder
         fileFrame = ctk.CTkFrame(master=hiddenDataFrame) #frame
@@ -111,11 +174,11 @@ class EmbedPage(ctk.CTkFrame):
         deleteButton = ctk.CTkButton(master=fileFrame, text='x', width=3) #Trash icon button placeholder
 
         #Calling 
-        file_label.pack(side='left')
-        deleteButton.pack(side='left')
-        fileFrame.pack(pady=10)
+       # file_label.pack(side='left')
+      #  deleteButton.pack(side='left')
+      #  fileFrame.pack(pady=10)
 
-        hiddenDataFrame.pack(side='left')
+       # hiddenDataFrame.pack(side='left')
 
         
         #back_button = ctk.CTkButton(embedPage, text="Back to Home", command=lambda: controller.show_frame(HomePage))
@@ -126,17 +189,17 @@ class ExtractPage(ctk.CTkFrame):
         super().__init__(parent)
 
         ExtractPageContent = ctk.CTkFrame(master = self, fg_color='White') # this is the content window
-        ExtractPageContent.pack(padx=500, pady=250)
+      #  ExtractPageContent.pack(padx=500, pady=250)
 
         label = ctk.CTkLabel(ExtractPageContent, text="Extract Page", font=customtkinter.CTkFont(family='Calibri', size=30))
-        label.pack(pady=20)
+      #  label.pack(pady=20)
 
         #Cover Media Frame
         coverMediaFrame = ctk.CTkFrame(ExtractPageContent)
         
 
         coverMedia_label = ctk.CTkLabel(ExtractPageContent, text='Cover Media', font=customtkinter.CTkFont(family='Calibri', size=30))
-        coverMedia_label.pack()
+     #   coverMedia_label.pack()
 
 
 
