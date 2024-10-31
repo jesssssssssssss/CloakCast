@@ -15,16 +15,75 @@ class HomePage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, fg_color="#FEFCFB")
         self.controller = controller
+        self.menu_expanded = False  # Initialising menu_expanded
 
         # Configuring the grid
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
+        # Initialize all UI components
+        self.create_sidebar()
+        self.create_content()
+
+    def create_sidebar(self):
         # Sidebar
-        sidebar = ctk.CTkFrame(self, fg_color="#393839", width=100)
-        sidebar.grid(row=0, column=0, sticky="nsew")
-        sidebar.grid_rowconfigure(0, weight=1)
-        sidebar.grid_propagate(False)  # Prevents the frame from shrinking
+        self.sidebar = ctk.CTkFrame(self, fg_color="#393839", width=100)
+        self.sidebar.grid(row=0, column=0, sticky="nsew")
+        self.sidebar.grid_rowconfigure(1, weight=1)
+        self.sidebar.grid_propagate(False) # Prevents the frame from shrinking
+
+        # Hamburger Menu Button
+        self.hamburger_button = ctk.CTkButton(
+            self.sidebar,
+            text="☰",
+            width=30,
+            height=30,
+            corner_radius=8,
+            fg_color="transparent",
+            text_color="white",
+            hover_color="#4a4a4a",
+            font=("Arial", 20),
+            command=self.toggle_menu
+        )
+        self.hamburger_button.grid(row=0, column=0, padx=5, pady=10, sticky="nw")
+
+        # Menu Frame (initially hidden)
+        self.menu_frame = ctk.CTkFrame(self.sidebar, fg_color="#2d2d2d", corner_radius=8)
+        
+        # Menu Items
+        self.menu_items = [
+            ("Settings", lambda: self.menu_action("Settings")),
+            ("Help", lambda: self.menu_action("Help")),
+            ("About", lambda: self.menu_action("About"))
+        ]
+        
+        # Create menu items
+        self.menu_buttons = []
+        for i, (text, command) in enumerate(self.menu_items):
+            btn = ctk.CTkButton(
+                self.menu_frame,
+                text=text,
+                fg_color="transparent",
+                text_color="white",
+                hover_color="#4a4a4a",
+                anchor="w",
+                command=command
+            )
+            self.menu_buttons.append(btn)
+
+        #Logo changes:
+        # Get the current directory of this script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Define the relative path to the image
+        imagePath = os.path.join(current_dir, "Images", "Logo.png")
+        # Create the CTkImage with the correct image path
+        self.logo = ctk.CTkImage(light_image=Image.open(imagePath), size=(80, 80))
+        # Create a label for the logo
+        self.logoLabel = ctk.CTkLabel(self.sidebar, image=self.logo, text="")
+        self.logoLabel.grid(row=0, column=0, pady=(50, 0))
+
+        
+    def create_content(self):
 
         # Content frame wrapper (for centering the content frame)
         contentWrapper = ctk.CTkFrame(self, fg_color="transparent")
@@ -70,16 +129,6 @@ class HomePage(ctk.CTkFrame):
         homePageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         homePageContent.grid_columnconfigure((0, 1), weight=1)
 
-        #Logo changes:
-        # Get the current directory of this script
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        # Define the relative path to the image
-        imagePath = os.path.join(current_dir, "Images", "Logo.png")
-        # Create the CTkImage with the correct image path
-        logo = ctk.CTkImage(light_image=Image.open(imagePath), size=(80, 80))
-        # Create a label for the logo
-        logoLabel = ctk.CTkLabel(sidebar, image=logo, text="")
-        logoLabel.grid(row=0, column=0, pady=(0, 0))
 
         # CloakCast label
         label = ctk.CTkLabel(homePageContent, text="CloakCast", font=("Lalezar", 70), text_color="#a63a50", fg_color="white")
@@ -89,7 +138,7 @@ class HomePage(ctk.CTkFrame):
         embedButton = ctk.CTkButton(
             homePageContent, 
             text="Embed", 
-            command=lambda: controller.show_frame(EmbedPage),
+            command=lambda: self.controller.show_frame(EmbedPage),
             text_color='White',
             fg_color='#393839',
             corner_radius=10,
@@ -100,22 +149,38 @@ class HomePage(ctk.CTkFrame):
         extractButton = ctk.CTkButton(            
             homePageContent, 
             text="Extract", 
-            command=lambda: controller.show_frame(ExtractPage),
+            command=lambda: self.controller.show_frame(ExtractPage),
             text_color='White',
             fg_color='#393839',
             corner_radius=10,
             font=('Lalezar', 30))
         extractButton.grid(row=1, column=1, padx=20, pady=20, sticky="ew")
 
-        #extractButton = ctk.CTkButton(self, text="Extract", command=lambda: controller.show_frame(ExtractPage))
-        #extractButton.pack(pady=10)
-        # we can add these later
+    def toggle_menu(self):
+        if not self.menu_expanded:
+            self.menu_frame.grid(row=1, column=0, padx=5, pady=(5, 5), sticky="new")
+            for i, btn in enumerate(self.menu_buttons):
+                btn.grid(row=i, column=0, padx=2, pady=2, sticky="ew")
+        else:
+            self.menu_frame.grid_forget()
+            for btn in self.menu_buttons:
+                btn.grid_forget()
+        
+        self.menu_expanded = not self.menu_expanded
+
+    def menu_action(self, action_name):
+        print(f"{action_name} clicked")
+        self.toggle_menu()
+
+
+
 
 
 
 class EmbedPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
+        self.controller = controller  # This is to store the controller reference
 
         #Functions--------------------
 
@@ -245,20 +310,117 @@ class EmbedPage(ctk.CTkFrame):
 
 class ExtractPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent)
+        super().__init__(parent, fg_color="#FEFCFB")
+        self.controller = controller
 
-        ExtractPageContent = ctk.CTkFrame(master = self, fg_color='White') # this is the content window
-      #  ExtractPageContent.pack(padx=500, pady=250)
+        #Functions--------------------
 
-        label = ctk.CTkLabel(ExtractPageContent, text="Extract Page", font=customtkinter.CTkFont(family='Calibri', size=30))
-      #  label.pack(pady=20)
+        #Variable holding selected audio file
+        selectedAudioFile = ctk.StringVar()
+        selectedAudioFile = set("No File Selected")
+ 
+        #Function to browse and open audio file
+        def openAudioFile():
+          filePath = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
+          if filePath:
+           print(f"Selected file: {filePath}")
+ 
+        #Function to delete selected audio file
+        def deleteAudio():
+            selectedAudioFile = set("No File Selected")
+            deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
 
-        #Cover Media Frame
-        coverMediaFrame = ctk.CTkFrame(ExtractPageContent)
+        # Configuring the grid
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
+        # Sidebar
+        sidebar = ctk.CTkFrame(self, fg_color="#393839", width=100)
+        sidebar.grid(row=0, column=0, sticky="nsew")
+        sidebar.grid_rowconfigure(0, weight=1)
+        sidebar.grid_propagate(False)  # Prevents the frame from shrinking
+
+        # Content frame wrapper (for centering the content frame)
+        contentWrapper = ctk.CTkFrame(self, fg_color="transparent")
+        contentWrapper.grid(row=0, column=1, sticky="nsew")
+        contentWrapper.grid_columnconfigure(0, weight=1)
+        contentWrapper.grid_rowconfigure(0, weight=1)
+
+        # Outer content frame (for outer border)
+        outerContentFrame = ctk.CTkFrame(contentWrapper, fg_color="#FEFCFB", corner_radius=10)
+        outerContentFrame.grid(row=0, column=0, padx=20, pady=20)
+        outerContentFrame.grid_columnconfigure(1, weight=1)
+        outerContentFrame.grid_rowconfigure(1, weight=1)
+
+        # Outer borders
+        outerBottomBorder = ctk.CTkFrame(outerContentFrame, fg_color="#F2E2E5", height=5)
+        outerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
+
+        # will likely remove outer left/right borders permanently
+        outer_right_border = ctk.CTkFrame(outerContentFrame, fg_color="#F5E8EA", width=3)
+        #outer_right_border.grid(row=0, column=2, rowspan=3, sticky="ns")
+
+        # Content frame 
+        contentFrame = ctk.CTkFrame(outerContentFrame, fg_color="#FEFCFB", corner_radius=10)
+        contentFrame.grid(row=1, column=1, sticky="nsew")
+        contentFrame.grid_columnconfigure(1, weight=1)
+        contentFrame.grid_rowconfigure(1, weight=1)
+
+        # Setting a fixed size for the content frame here
+        contentFrame.configure(width=800, height=600)
+        contentFrame.grid_propagate(False)  # This prevents the frame from shrinking
+
+        innerBottomBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", height=8)
+        innerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
+
+        innerLeftBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
+        innerLeftBorder.grid(row=0, column=0, rowspan=3, sticky="ns")
+
+        innerRightBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
+        innerRightBorder.grid(row=0, column=2, rowspan=3, sticky="ns")
+
+        # Extract page content
+        extractPageContent = ctk.CTkFrame(contentFrame, fg_color='White', corner_radius=10)
+        extractPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
+        extractPageContent.grid_columnconfigure((0, 1), weight=1)
+
+        # Header label
+        label = ctk.CTkLabel(extractPageContent, text="Extract Page", font=("Lalezar", 70), text_color="#a63a50", fg_color="white")
+        label.grid(row=0, column=0, padx=20, pady=20, sticky="ew", columnspan=2)
+
+        #Media--------------------
+ 
+        uploadMediaLabel = ctk.CTkLabel(master=extractPageContent, text='Cover Media', text_color='#a63a50', font=('lalezar', 40))
+        uploadMediaLabel.grid(row=2, column=0)
         
+        #Audio upload button
+        audioUploadButton = ctk.CTkButton(master=extractPageContent,
+                                    text='Upload Audio',
+                                    text_color='#a63a50',
+                                    border_width= 3,
+                                    border_color='#393839',
+                                    corner_radius = 10,
+                                    fg_color= '#FFFFFF',
+                                    font=('Lalezar', 30),
+                                    command=openAudioFile) #Needs to be added
+        audioUploadButton.grid(row=3, column=0, pady=20)
 
-        coverMedia_label = ctk.CTkLabel(ExtractPageContent, text='Cover Media', font=customtkinter.CTkFont(family='Calibri', size=30))
-     #   coverMedia_label.pack()
+        #Chosen audio display
+        audioFileLabel = ctk.CTkLabel(master=extractPageContent,
+                                    textvariable= selectedAudioFile,
+                                    fg_color= 'blue',
+                                    corner_radius = 10)
+        audioFileLabel.grid(row=4, column=0)
+        
+        #Delete button for chosen audio file display
+        deleteButton = ctk.CTkButton(master=extractPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
+        deleteButton.grid(row=3, column=2)
+
+
+
+
+
+
 
 
 
