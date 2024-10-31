@@ -38,32 +38,7 @@ if __name__ == "__main__":
 
 
 
-''' # window
-
-window = ctk.CTk(fg_color='#FEFCFB')
-window.title('Main')
-window.geometry('1500x1000')
-
-contentWindow = ctk.CTkFrame(master = window, fg_color='White')
-contentWindow.grid(padx=500, pady=250)
-
-# title
-titleLabel = ctk.CTkLabel(
-    master = contentWindow, 
-    text = 'CloakCast', 
-    text_color='#a63a50',
-    corner_radius = 10, 
-    font=("lalezar", 70)) # need to figure out how to import font / get it to work
-titleLabel.grid(row=0, column=0, padx=100)
-
-embedButton = ctk.CTkButton(master=contentWindow, text='Embed', text_color='#FFF', fg_color='#393839')
-embedButton.grid(row=1, column=0, padx=20,pady=(0,20))
-
-
-extractButton = ctk.CTkButton(master=contentWindow, text='Extract', text_color='#FFF', fg_color='#393839')
-extractButton.grid(row=1, column=1,pady=(0,0))
-
-
+''' 
 
 
 # input field *
