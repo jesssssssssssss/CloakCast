@@ -1,21 +1,15 @@
-''' import tkinter as tk
-from tkinter import ttk
-from tkinter import font
-import ttkbootstrap as ttk '''
 import customtkinter as ctk
 import customtkinter
 from PIL import Image
 import os
 from tkinter import filedialog
 
-# I had to remove the tkinter imports, because they were overriding the CTK fomatting! So there are a few lines which still need converting
-# *** ********************
 
 class HomePage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, fg_color="#FEFCFB")
         self.controller = controller
-        self.menu_expanded = False  # Initialising menu_expanded
+        self.menuExpanded = False  # Initialising menuExpanded
 
         # Configuring the grid
         self.grid_columnconfigure(1, weight=1)
@@ -33,7 +27,7 @@ class HomePage(ctk.CTkFrame):
         self.sidebar.grid_propagate(False) # Prevents the frame from shrinking
 
         # Hamburger Menu Button
-        self.hamburger_button = ctk.CTkButton(
+        self.hamburgerButton = ctk.CTkButton(
             self.sidebar,
             text="☰",
             width=30,
@@ -45,7 +39,7 @@ class HomePage(ctk.CTkFrame):
             font=("Arial", 20),
             command=self.toggle_menu
         )
-        self.hamburger_button.grid(row=0, column=0, padx=5, pady=10, sticky="nw")
+        self.hamburgerButton.grid(row=0, column=0, padx=5, pady=10, sticky="nw")
 
         # Menu Frame (initially hidden)
         self.menu_frame = ctk.CTkFrame(self.sidebar, fg_color="#2d2d2d", corner_radius=8)
@@ -58,7 +52,7 @@ class HomePage(ctk.CTkFrame):
         ]
         
         # Create menu items
-        self.menu_buttons = []
+        self.menuButtons = []
         for i, (text, command) in enumerate(self.menu_items):
             btn = ctk.CTkButton(
                 self.menu_frame,
@@ -69,7 +63,7 @@ class HomePage(ctk.CTkFrame):
                 anchor="w",
                 command=command
             )
-            self.menu_buttons.append(btn)
+            self.menuButtons.append(btn)
 
         #Logo changes:
         # Get the current directory of this script
@@ -157,24 +151,20 @@ class HomePage(ctk.CTkFrame):
         extractButton.grid(row=1, column=1, padx=20, pady=20, sticky="ew")
 
     def toggle_menu(self):
-        if not self.menu_expanded:
+        if not self.menuExpanded:
             self.menu_frame.grid(row=1, column=0, padx=5, pady=(5, 5), sticky="new")
-            for i, btn in enumerate(self.menu_buttons):
+            for i, btn in enumerate(self.menuButtons):
                 btn.grid(row=i, column=0, padx=2, pady=2, sticky="ew")
         else:
             self.menu_frame.grid_forget()
-            for btn in self.menu_buttons:
+            for btn in self.menuButtons:
                 btn.grid_forget()
         
-        self.menu_expanded = not self.menu_expanded
+        self.menuExpanded = not self.menuExpanded
 
     def menu_action(self, action_name):
         print(f"{action_name} clicked")
         self.toggle_menu()
-
-
-
-
 
 
 class EmbedPage(ctk.CTkFrame):
@@ -312,6 +302,97 @@ class ExtractPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, fg_color="#FEFCFB")
         self.controller = controller
+        self.menuExpanded = False  # Initialising menuExpanded
+
+        # Configuring the grid
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
+        # Initialize all UI components
+        self.create_sidebar()
+        self.create_content()
+
+
+    def create_sidebar(self):
+        # Sidebar
+        self.sidebar = ctk.CTkFrame(self, fg_color="#393839", width=100)
+        self.sidebar.grid(row=0, column=0, sticky="nsew")
+        self.sidebar.grid_rowconfigure(1, weight=1)
+        self.sidebar.grid_propagate(False) # Prevents the frame from shrinking
+
+        # Hamburger Menu Button
+        self.hamburgerButton = ctk.CTkButton(
+            self.sidebar,
+            text="☰",
+            width=30,
+            height=30,
+            corner_radius=8,
+            fg_color="transparent",
+            text_color="white",
+            hover_color="#4a4a4a",
+            font=("Arial", 20),
+            command=self.toggle_menu
+        )
+        self.hamburgerButton.grid(row=0, column=0, padx=5, pady=10, sticky="nw")
+
+        # Menu Frame (initially hidden)
+        self.menu_frame = ctk.CTkFrame(self.sidebar, fg_color="#2d2d2d", corner_radius=8)
+        
+        # Menu Items
+        self.menu_items = [
+            ("Settings", lambda: self.menu_action("Settings")),
+            ("Help", lambda: self.menu_action("Help")),
+            ("About", lambda: self.menu_action("About"))
+        ]
+        
+        # Create menu items
+        self.menuButtons = []
+        for i, (text, command) in enumerate(self.menu_items):
+            btn = ctk.CTkButton(
+                self.menu_frame,
+                text=text,
+                fg_color="transparent",
+                text_color="white",
+                hover_color="#4a4a4a",
+                anchor="w",
+                command=command
+            )
+            self.menuButtons.append(btn)
+
+        #Logo changes:
+        # Get the current directory of this script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Define the relative path to the image
+        imagePath = os.path.join(current_dir, "Images", "Logo.png")
+        # Create the CTkImage with the correct image path
+        self.logo = ctk.CTkImage(light_image=Image.open(imagePath), size=(80, 80))
+        # Create a label for the logo
+        self.logoLabel = ctk.CTkLabel(self.sidebar, image=self.logo, text="")
+        self.logoLabel.grid(row=0, column=0, pady=(50, 0))
+
+    def toggle_menu(self):
+        if not self.menuExpanded:
+            self.menu_frame.grid(row=1, column=0, padx=5, pady=(5, 5), sticky="new")
+            for i, btn in enumerate(self.menuButtons):
+                btn.grid(row=i, column=0, padx=2, pady=2, sticky="ew")
+        else:
+            self.menu_frame.grid_forget()
+            for btn in self.menuButtons:
+                btn.grid_forget()
+        
+        self.menuExpanded = not self.menuExpanded
+
+    def menu_action(self, action_name):
+        print(f"{action_name} clicked")
+        self.toggle_menu()
+
+
+
+    
+
+        # *********
+
+    def create_content(self):
 
         #Functions--------------------
 
@@ -330,15 +411,6 @@ class ExtractPage(ctk.CTkFrame):
             selectedAudioFile = set("No File Selected")
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
 
-        # Configuring the grid
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(0, weight=1)
-
-        # Sidebar
-        sidebar = ctk.CTkFrame(self, fg_color="#393839", width=100)
-        sidebar.grid(row=0, column=0, sticky="nsew")
-        sidebar.grid_rowconfigure(0, weight=1)
-        sidebar.grid_propagate(False)  # Prevents the frame from shrinking
 
         # Content frame wrapper (for centering the content frame)
         contentWrapper = ctk.CTkFrame(self, fg_color="transparent")
