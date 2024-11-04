@@ -26,20 +26,29 @@ class HomePage(ctk.CTkFrame):
         self.sidebar.grid_rowconfigure(1, weight=1)
         self.sidebar.grid_propagate(False) # Prevents the frame from shrinking
 
-        # Hamburger Menu Button
-        self.hamburgerButton = ctk.CTkButton(
-            self.sidebar,
-            text="☰",
-            width=30,
-            height=30,
-            corner_radius=8,
-            fg_color="transparent",
-            text_color="white",
-            hover_color="#4a4a4a",
-            font=("Arial", 20),
-            command=self.toggle_menu
-        )
-        self.hamburgerButton.grid(row=0, column=0, padx=5, pady=10, sticky="nw")
+        #Logo changes:
+        # Get the current directory of this script
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        # Define the relative path to the image
+        logoPath = os.path.join(current_dir, "Images", "Logo.png")
+        # Create the CTkImage with the correct image path
+        self.logo = ctk.CTkImage(light_image=Image.open(logoPath), size=(80, 80))
+        # Create a label for the logo
+        self.logoLabel = ctk.CTkLabel(self.sidebar, image=self.logo, text="")
+        self.logoLabel.grid(row=0, column=0, padx=10, pady=(20, 0), sticky="nw")
+
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        menuIconPath = os.path.join(current_dir, "Images", "HamburgerMenuIcon.png")
+
+        self.menuIcon = ctk.CTkImage(light_image=Image.open(menuIconPath), size=(40,40))
+        self.menuIconButton = ctk.CTkButton(
+            self.sidebar, 
+            image=self.menuIcon, 
+            text="", 
+            fg_color="transparent", 
+            command=self.toggle_menu)
+        self.menuIconButton.grid(row=1, column=0, sticky="nw", padx=(0,100), ipadx=0, ipady=0)
+        
 
         # Menu Frame (initially hidden)
         self.menu_frame = ctk.CTkFrame(self.sidebar, fg_color="#2d2d2d", corner_radius=8)
@@ -65,16 +74,7 @@ class HomePage(ctk.CTkFrame):
             )
             self.menuButtons.append(btn)
 
-        #Logo changes:
-        # Get the current directory of this script
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        # Define the relative path to the image
-        imagePath = os.path.join(current_dir, "Images", "Logo.png")
-        # Create the CTkImage with the correct image path
-        self.logo = ctk.CTkImage(light_image=Image.open(imagePath), size=(80, 80))
-        # Create a label for the logo
-        self.logoLabel = ctk.CTkLabel(self.sidebar, image=self.logo, text="")
-        self.logoLabel.grid(row=0, column=0, pady=(50, 0))
+
 
         
     def create_content(self):
@@ -363,9 +363,9 @@ class ExtractPage(ctk.CTkFrame):
         # Get the current directory of this script
         current_dir = os.path.dirname(os.path.abspath(__file__))
         # Define the relative path to the image
-        imagePath = os.path.join(current_dir, "Images", "Logo.png")
+        logoPath = os.path.join(current_dir, "Images", "Logo.png")
         # Create the CTkImage with the correct image path
-        self.logo = ctk.CTkImage(light_image=Image.open(imagePath), size=(80, 80))
+        self.logo = ctk.CTkImage(light_image=Image.open(logoPath), size=(80, 80))
         # Create a label for the logo
         self.logoLabel = ctk.CTkLabel(self.sidebar, image=self.logo, text="")
         self.logoLabel.grid(row=0, column=0, pady=(50, 0))
@@ -456,41 +456,34 @@ class ExtractPage(ctk.CTkFrame):
         extractPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         extractPageContent.grid_columnconfigure((0, 1), weight=1)
 
-        # Header label
-        label = ctk.CTkLabel(extractPageContent, text="Extract Page", font=("Lalezar", 70), text_color="#a63a50", fg_color="white")
-        label.grid(row=0, column=0, padx=20, pady=20, sticky="ew", columnspan=2)
+
 
         #Media--------------------
  
-        uploadMediaLabel = ctk.CTkLabel(master=extractPageContent, text='Cover Media', text_color='#a63a50', font=('lalezar', 40))
-        uploadMediaLabel.grid(row=2, column=0)
         
         #Audio upload button
-        audioUploadButton = ctk.CTkButton(master=extractPageContent,
-                                    text='Upload Audio',
-                                    text_color='#a63a50',
-                                    border_width= 3,
-                                    border_color='#393839',
-                                    corner_radius = 10,
-                                    fg_color= '#FFFFFF',
-                                    font=('Lalezar', 30),
-                                    command=openAudioFile) #Needs to be added
-        audioUploadButton.grid(row=3, column=0, pady=20)
+        audioUploadButton = ctk.CTkButton(
+            extractPageContent, 
+            text="Upload File", 
+            command=openAudioFile,
+            text_color='White',
+            fg_color='#393839',
+            corner_radius=100,
+            font=('Lalezar', 30))
+        audioUploadButton.grid(row=0, column=1, sticky="w", pady=120, ipadx=10, ipady=10)
 
-        #Chosen audio display
+
+
+        #Chosen audio display 
         audioFileLabel = ctk.CTkLabel(master=extractPageContent,
                                     textvariable= selectedAudioFile,
                                     fg_color= 'blue',
                                     corner_radius = 10)
-        audioFileLabel.grid(row=4, column=0)
+        audioFileLabel.grid(row=1, column=1, sticky="w", padx=50, columnspan=1)
         
         #Delete button for chosen audio file display
-        deleteButton = ctk.CTkButton(master=extractPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
-        deleteButton.grid(row=3, column=2)
-
-
-
-
+       # deleteButton = ctk.CTkButton(master=extractPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
+       # deleteButton.grid(row=3, column=2)
 
 
 
