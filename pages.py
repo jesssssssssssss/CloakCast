@@ -199,10 +199,22 @@ class EmbedPage(ctk.CTkFrame):
         embedPageContent = ctk.CTkFrame(master = self, fg_color='White') # this is the content window
         embedPageContent.grid(padx=500, pady=250)
 
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
+
+        self.backArrow = ctk.CTkImage(light_image=Image.open(backArrowPath), size=(40,40))
+        self.backArrowButton = ctk.CTkButton(
+            embedPageContent, 
+            image=self.backArrow, 
+            text="", 
+            fg_color="transparent",
+            command=lambda: self.controller.show_frame(HomePage))
+        self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
+
         #Cover Media--------------------
  
         coverMediaLabel = ctk.CTkLabel(master=embedPageContent, text='Cover Media', text_color='#a63a50', font=('lalezar', 40))
-        coverMediaLabel.grid(row=0, column=0)
+        coverMediaLabel.grid(row=1, column=0)
         
         #Audio upload button
         audioUploadButton = ctk.CTkButton(master=embedPageContent,
@@ -214,7 +226,7 @@ class EmbedPage(ctk.CTkFrame):
                                     fg_color= '#FFFFFF',
                                     font=('Lalezar', 30),
                                     command=openAudioFile) #Needs to be added
-        audioUploadButton.grid(row=1, column=0, pady=20)
+        audioUploadButton.grid(row=2, column=0, pady=20)
         
         
         #Chosen audio display
@@ -222,7 +234,7 @@ class EmbedPage(ctk.CTkFrame):
                                     textvariable= selectedAudioFile,
                                     fg_color= 'blue',
                                     corner_radius = 10)
-        audioFileLabel.grid(row=2, column=0)
+        audioFileLabel.grid(row=3, column=0)
         
         #Delete button for chosen audio file display
         deleteButton = ctk.CTkButton(master=embedPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
@@ -381,12 +393,23 @@ class ExtractPage(ctk.CTkFrame):
         extractPageContent = ctk.CTkFrame(contentFrame, fg_color='White', corner_radius=10)
         extractPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         extractPageContent.grid_columnconfigure((0, 1), weight=1)
-
-
-
-        #Media--------------------
  
         
+
+        # Back arrow that returns user to home
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
+
+        self.backArrow = ctk.CTkImage(light_image=Image.open(backArrowPath), size=(40,40))
+        self.backArrowButton = ctk.CTkButton(
+            extractPageContent, 
+            image=self.backArrow, 
+            text="", 
+            fg_color="transparent",
+            command=lambda: self.controller.show_frame(HomePage))
+        self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
+
+
         #Audio upload button
         audioUploadButton = ctk.CTkButton(
             extractPageContent, 
@@ -428,7 +451,6 @@ class AboutPage(ctk.CTkFrame): # FIX NAV TO HERE IN HOMEPAGE CLASS
 
 
     def create_content(self):
-
 
         # Content frame wrapper (for centering the content frame)
         contentWrapper = ctk.CTkFrame(self, fg_color="transparent")
@@ -473,9 +495,22 @@ class AboutPage(ctk.CTkFrame): # FIX NAV TO HERE IN HOMEPAGE CLASS
         aboutPageContent = ctk.CTkFrame(contentFrame, fg_color='White', corner_radius=10)
         aboutPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         aboutPageContent.grid_columnconfigure((0, 1), weight=1)
+
+        # Back arrow that returns user to home
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
+
+        self.backArrow = ctk.CTkImage(light_image=Image.open(backArrowPath), size=(40,40))
+        self.backArrowButton = ctk.CTkButton(
+            aboutPageContent, 
+            image=self.backArrow, 
+            text="", 
+            fg_color="transparent",
+            command=lambda: self.controller.show_frame(HomePage))
+        self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
         
         headLabel = ctk.CTkLabel(master=aboutPageContent, text='ABOUT', font=('Lalezar', 50))
-        headLabel.grid(row=0, column=1, sticky="w")
+        headLabel.grid(row=1, column=1, sticky="w")
 
          # Embed button
         aButton = ctk.CTkButton(
