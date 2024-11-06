@@ -4,27 +4,17 @@ from PIL import Image
 import os
 from tkinter import filedialog
 
-
-class HomePage(ctk.CTkFrame):
+class Sidebar(ctk.CTkFrame):
     def __init__(self, parent, controller):
-        super().__init__(parent, fg_color="#FEFCFB")
-        self.controller = controller
-        self.menuExpanded = False  # Initialising menuExpanded
+        super().__init__(parent, fg_color="#393839")
+        self.controller=controller
+        self.menuExpanded=False
+        self.collapsedWidth=100
+        self.expandedWidth=265
 
-        # Configuring the grid
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(0, weight=1)
-
-        # Initialize all UI components
-        self.create_sidebar()
-        self.create_content()
-
-    def create_sidebar(self):
-        # Sidebar
-        self.sidebar = ctk.CTkFrame(self, fg_color="#393839", width=100)
-        self.sidebar.grid(row=0, column=0, sticky="nsew")
-        self.sidebar.grid_rowconfigure(1, weight=1)
-        self.sidebar.grid_propagate(False) # Prevents the frame from shrinking
+        self.configure(width=self.collapsedWidth)
+        self.grid_rowconfigure(1, weight=1)
+        self.grid_propagate(False)
 
         #Logo changes:
         # Get the current directory of this script
@@ -34,7 +24,7 @@ class HomePage(ctk.CTkFrame):
         # Create the CTkImage with the correct image path
         self.logo = ctk.CTkImage(light_image=Image.open(logoPath), size=(80, 80))
         # Create a label for the logo
-        self.logoLabel = ctk.CTkLabel(self.sidebar, image=self.logo, text="")
+        self.logoLabel = ctk.CTkLabel(self, image=self.logo, text="")
         self.logoLabel.grid(row=0, column=0, padx=10, pady=(20, 0), sticky="nw")
 
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -42,41 +32,65 @@ class HomePage(ctk.CTkFrame):
 
         self.menuIcon = ctk.CTkImage(light_image=Image.open(menuIconPath), size=(40,40))
         self.menuIconButton = ctk.CTkButton(
-            self.sidebar, 
+            self, 
             image=self.menuIcon, 
             text="", 
             fg_color="transparent", 
             command=self.toggle_menu)
-        self.menuIconButton.grid(row=1, column=0, sticky="nw", padx=(0,100), ipadx=0, ipady=0)
+        self.menuIconButton.grid(row=1, column=0, sticky="new", padx=(0,0), ipadx=0, ipady=0)
         
 
         # Menu Frame (initially hidden)
-        self.menu_frame = ctk.CTkFrame(self.sidebar, fg_color="#2d2d2d", corner_radius=8)
+        self.menuFrame = ctk.CTkFrame(self, fg_color="#2d2d2d", corner_radius=8)
+
+    def toggle_menu(self):
+        if not self.menuExpanded:
+            self.configure(width = self.expandedWidth)
+            self.menuFrame.grid(row=1, column=0, padx=5, pady=(5, 5), sticky="new")
+            # About button
+            aboutButton = ctk.CTkButton(            
+                self.menuFrame, 
+                text="About", 
+                command=lambda: self.controller.show_frame(AboutPage),
+                text_color='White',
+                fg_color='transparent',
+                corner_radius=10,
+                anchor="w")
+            aboutButton.grid(row=1, column=1, padx=20, pady=20, sticky="ew")
+
+            helpContactButton = ctk.CTkButton(            
+                self.menuFrame, 
+                text="Help / Contact Us", 
+                command=lambda: self.controller.show_frame(AboutPage),
+                text_color='White',
+                fg_color='transparent',
+                corner_radius=10,
+                anchor="w")
+            helpContactButton.grid(row=2, column=1, padx=20, pady=20, sticky="ew")
+
+        else:
+            self.configure(width = self.collapsedWidth)
+            self.menuFrame.grid_forget()
         
-        # Menu Items
-        self.menu_items = [
-            ("Settings", lambda: self.menu_action("Settings")),
-            ("Help", lambda: self.menu_action("Help")),
-            ("About", lambda: self.menu_action("About"))
-        ]
-        
-        # Create menu items
-        self.menuButtons = []
-        for i, (text, command) in enumerate(self.menu_items):
-            btn = ctk.CTkButton(
-                self.menu_frame,
-                text=text,
-                fg_color="transparent",
-                text_color="white",
-                hover_color="#4a4a4a",
-                anchor="w",
-                command=command
-            )
-            self.menuButtons.append(btn)
+    
+        self.menuExpanded = not self.menuExpanded
 
 
 
-        
+class HomePage(ctk.CTkFrame):
+    def __init__(self, parent, controller):
+        super().__init__(parent, fg_color="#FEFCFB")
+        self.controller = controller
+
+        # Configuring the grid
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
+        # Initialize all UI components
+        self.create_content()
+        self.sidebar=Sidebar(self, controller)
+        self.sidebar.place(x=0, y=0, relheight=1.0)
+
     def create_content(self):
 
         # Content frame wrapper (for centering the content frame)
@@ -150,27 +164,18 @@ class HomePage(ctk.CTkFrame):
             font=('Lalezar', 30))
         extractButton.grid(row=1, column=1, padx=20, pady=20, sticky="ew")
 
-    def toggle_menu(self):
-        if not self.menuExpanded:
-            self.menu_frame.grid(row=1, column=0, padx=5, pady=(5, 5), sticky="new")
-            for i, btn in enumerate(self.menuButtons):
-                btn.grid(row=i, column=0, padx=2, pady=2, sticky="ew")
-        else:
-            self.menu_frame.grid_forget()
-            for btn in self.menuButtons:
-                btn.grid_forget()
-        
-        self.menuExpanded = not self.menuExpanded
 
-    def menu_action(self, action_name):
-        print(f"{action_name} clicked")
-        self.toggle_menu()
+
+    
 
 
 class EmbedPage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller  # This is to store the controller reference
+
+        self.sidebar=Sidebar(self, controller)
+        self.sidebar.place(x=0, y=0, relheight=1.0)
 
         #Functions--------------------
 
@@ -309,88 +314,9 @@ class ExtractPage(ctk.CTkFrame):
         self.grid_rowconfigure(0, weight=1)
 
         # Initialize all UI components
-        self.create_sidebar()
         self.create_content()
-
-
-    def create_sidebar(self):
-        # Sidebar
-        self.sidebar = ctk.CTkFrame(self, fg_color="#393839", width=100)
-        self.sidebar.grid(row=0, column=0, sticky="nsew")
-        self.sidebar.grid_rowconfigure(1, weight=1)
-        self.sidebar.grid_propagate(False) # Prevents the frame from shrinking
-
-        # Hamburger Menu Button
-        self.hamburgerButton = ctk.CTkButton(
-            self.sidebar,
-            text="☰",
-            width=30,
-            height=30,
-            corner_radius=8,
-            fg_color="transparent",
-            text_color="white",
-            hover_color="#4a4a4a",
-            font=("Arial", 20),
-            command=self.toggle_menu
-        )
-        self.hamburgerButton.grid(row=0, column=0, padx=5, pady=10, sticky="nw")
-
-        # Menu Frame (initially hidden)
-        self.menu_frame = ctk.CTkFrame(self.sidebar, fg_color="#2d2d2d", corner_radius=8)
-        
-        # Menu Items
-        self.menu_items = [
-            ("Settings", lambda: self.menu_action("Settings")),
-            ("Help", lambda: self.menu_action("Help")),
-            ("About", lambda: self.menu_action("About"))
-        ]
-        
-        # Create menu items
-        self.menuButtons = []
-        for i, (text, command) in enumerate(self.menu_items):
-            btn = ctk.CTkButton(
-                self.menu_frame,
-                text=text,
-                fg_color="transparent",
-                text_color="white",
-                hover_color="#4a4a4a",
-                anchor="w",
-                command=command
-            )
-            self.menuButtons.append(btn)
-
-        #Logo changes:
-        # Get the current directory of this script
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        # Define the relative path to the image
-        logoPath = os.path.join(current_dir, "Images", "Logo.png")
-        # Create the CTkImage with the correct image path
-        self.logo = ctk.CTkImage(light_image=Image.open(logoPath), size=(80, 80))
-        # Create a label for the logo
-        self.logoLabel = ctk.CTkLabel(self.sidebar, image=self.logo, text="")
-        self.logoLabel.grid(row=0, column=0, pady=(50, 0))
-
-    def toggle_menu(self):
-        if not self.menuExpanded:
-            self.menu_frame.grid(row=1, column=0, padx=5, pady=(5, 5), sticky="new")
-            for i, btn in enumerate(self.menuButtons):
-                btn.grid(row=i, column=0, padx=2, pady=2, sticky="ew")
-        else:
-            self.menu_frame.grid_forget()
-            for btn in self.menuButtons:
-                btn.grid_forget()
-        
-        self.menuExpanded = not self.menuExpanded
-
-    def menu_action(self, action_name):
-        print(f"{action_name} clicked")
-        self.toggle_menu()
-
-
-
-    
-
-        # *********
+        self.sidebar=Sidebar(self, controller)
+        self.sidebar.place(x=0, y=0, relheight=1.0)
 
     def create_content(self):
 
@@ -484,6 +410,85 @@ class ExtractPage(ctk.CTkFrame):
         #Delete button for chosen audio file display
        # deleteButton = ctk.CTkButton(master=extractPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
        # deleteButton.grid(row=3, column=2)
+
+class AboutPage(ctk.CTkFrame): # FIX NAV TO HERE IN HOMEPAGE CLASS
+    def __init__(self, parent, controller):
+        super().__init__(parent, fg_color="#FEFCFB")
+        self.controller = controller
+        self.menuExpanded = False  # Initialising menuExpanded
+
+        # Configuring the grid
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_rowconfigure(0, weight=1)
+
+        # Initialize all UI components
+        self.create_content()
+        self.sidebar=Sidebar(self, controller)
+        self.sidebar.place(x=0, y=0, relheight=1.0)
+
+
+    def create_content(self):
+
+
+        # Content frame wrapper (for centering the content frame)
+        contentWrapper = ctk.CTkFrame(self, fg_color="transparent")
+        contentWrapper.grid(row=0, column=1, sticky="nsew")
+        contentWrapper.grid_columnconfigure(0, weight=1)
+        contentWrapper.grid_rowconfigure(0, weight=1)
+
+        # Outer content frame (for outer border)
+        outerContentFrame = ctk.CTkFrame(contentWrapper, fg_color="#FEFCFB", corner_radius=10)
+        outerContentFrame.grid(row=0, column=0, padx=20, pady=20)
+        outerContentFrame.grid_columnconfigure(1, weight=1)
+        outerContentFrame.grid_rowconfigure(1, weight=1)
+
+        # Outer borders
+        outerBottomBorder = ctk.CTkFrame(outerContentFrame, fg_color="#F2E2E5", height=5)
+        outerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
+
+        # will likely remove outer left/right borders permanently
+        outer_right_border = ctk.CTkFrame(outerContentFrame, fg_color="#F5E8EA", width=3)
+        #outer_right_border.grid(row=0, column=2, rowspan=3, sticky="ns")
+
+        # Content frame 
+        contentFrame = ctk.CTkFrame(outerContentFrame, fg_color="#FEFCFB", corner_radius=10)
+        contentFrame.grid(row=1, column=1, sticky="nsew")
+        contentFrame.grid_columnconfigure(1, weight=1)
+        contentFrame.grid_rowconfigure(1, weight=1)
+
+        # Setting a fixed size for the content frame here
+        contentFrame.configure(width=800, height=600)
+        contentFrame.grid_propagate(False)  # This prevents the frame from shrinking
+
+        innerBottomBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", height=8)
+        innerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
+
+        innerLeftBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
+        innerLeftBorder.grid(row=0, column=0, rowspan=3, sticky="ns")
+
+        innerRightBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
+        innerRightBorder.grid(row=0, column=2, rowspan=3, sticky="ns")
+
+
+        aboutPageContent = ctk.CTkFrame(contentFrame, fg_color='White', corner_radius=10)
+        aboutPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
+        aboutPageContent.grid_columnconfigure((0, 1), weight=1)
+        
+        headLabel = ctk.CTkLabel(master=aboutPageContent, text='ABOUT', font=('Lalezar', 50))
+        headLabel.grid(row=0, column=1, sticky="w")
+
+         # Embed button
+        aButton = ctk.CTkButton(
+            aboutPageContent, 
+            text="Im a button xx", 
+            command=lambda: self.controller.show_frame(EmbedPage),
+            text_color='White',
+            fg_color='#393839',
+            corner_radius=10,
+            font=('Lalezar', 30))
+        aButton.grid(row=2, column=0, padx=20, pady=20, sticky="ew")
+
+
 
 
 
