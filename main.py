@@ -5,7 +5,7 @@
 import customtkinter as ctk
 from PIL import Image
 
-from pages import HomePage, EmbedPage, ExtractPage
+from pages import HomePage, EmbedPage, ExtractPage, AboutPage, Sidebar
 
 
 class MainApp(ctk.CTk):
@@ -19,7 +19,7 @@ class MainApp(ctk.CTk):
 
         self.frames = {}
 
-        for F in (HomePage, EmbedPage, ExtractPage):
+        for F in (HomePage, EmbedPage, ExtractPage, AboutPage):
             frame = F(self, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
