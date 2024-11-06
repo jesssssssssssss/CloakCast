@@ -12,6 +12,8 @@ class Sidebar(ctk.CTkFrame):
         self.collapsedWidth=100
         self.expandedWidth=265
 
+        self.menuExpanded = controller.sidebarExpanded
+
         self.configure(width=self.collapsedWidth)
         self.grid_rowconfigure(1, weight=1)
         self.grid_propagate(False)
@@ -36,14 +38,14 @@ class Sidebar(ctk.CTkFrame):
             image=self.menuIcon, 
             text="", 
             fg_color="transparent", 
-            command=self.toggle_menu)
+            command=self.toggleMenu)
         self.menuIconButton.grid(row=1, column=0, sticky="new", padx=(0,0), ipadx=0, ipady=0)
         
 
         # Menu Frame (initially hidden)
         self.menuFrame = ctk.CTkFrame(self, fg_color="#2d2d2d", corner_radius=8)
 
-    def toggle_menu(self):
+    def toggleMenu(self):
         if not self.menuExpanded:
             self.configure(width = self.expandedWidth)
             self.menuFrame.grid(row=1, column=0, padx=5, pady=(5, 5), sticky="new")
@@ -69,29 +71,27 @@ class Sidebar(ctk.CTkFrame):
             helpContactButton.grid(row=2, column=1, padx=20, pady=20, sticky="ew")
 
         else:
-            self.configure(width = self.collapsedWidth)
-            self.menuFrame.grid_forget()
+            self.collapse_menu()
         
-    
         self.menuExpanded = not self.menuExpanded
+        # Updating the MainApps state
+        self.controller.sidebarExpanded = self.menuExpanded
+    
+    def collapse_menu(self):
+        # Method specifically for collapsing the menu in page transitions
+        self.configure(width=self.collapsedWidth)
+        self.menuFrame.grid_forget()
+        self.menuExpanded = False
+        self.controller.sidebarExpanded = False
 
+class BasePage(ctk.CTkFrame):
 
-
-class HomePage(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent, fg_color="#FEFCFB")
         self.controller = controller
-
-        # Configuring the grid
+        
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
-
-        # Initialize all UI components
-        self.create_content()
-        self.sidebar=Sidebar(self, controller)
-        self.sidebar.place(x=0, y=0, relheight=1.0)
-
-    def create_content(self):
 
         # Content frame wrapper (for centering the content frame)
         contentWrapper = ctk.CTkFrame(self, fg_color="transparent")
@@ -109,31 +109,48 @@ class HomePage(ctk.CTkFrame):
         outerBottomBorder = ctk.CTkFrame(outerContentFrame, fg_color="#F2E2E5", height=5)
         outerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
 
-        # will likely remove outer left/right borders permanently
-        outer_right_border = ctk.CTkFrame(outerContentFrame, fg_color="#F5E8EA", width=3)
-        #outer_right_border.grid(row=0, column=2, rowspan=3, sticky="ns")
-
         # Content frame 
-        contentFrame = ctk.CTkFrame(outerContentFrame, fg_color="#FEFCFB", corner_radius=10)
-        contentFrame.grid(row=1, column=1, sticky="nsew")
-        contentFrame.grid_columnconfigure(1, weight=1)
-        contentFrame.grid_rowconfigure(1, weight=1)
+        self.contentFrame = ctk.CTkFrame(outerContentFrame, fg_color="#FEFCFB", corner_radius=10)
+        self.contentFrame.grid(row=1, column=1, sticky="nsew")
+        self.contentFrame.grid_columnconfigure(1, weight=1)
+        self.contentFrame.grid_rowconfigure(1, weight=1)
 
         # Setting a fixed size for the content frame here
-        contentFrame.configure(width=800, height=600)
-        contentFrame.grid_propagate(False)  # This prevents the frame from shrinking
+        self.contentFrame.configure(width=800, height=600)
+        self.contentFrame.grid_propagate(False)  # This prevents the frame from shrinking
 
-        innerBottomBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", height=8)
+        innerBottomBorder = ctk.CTkFrame(self.contentFrame, fg_color="#E6C7CC", height=8)
         innerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
 
-        innerLeftBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
+        innerLeftBorder = ctk.CTkFrame(self.contentFrame, fg_color="#E6C7CC", width=3)
         innerLeftBorder.grid(row=0, column=0, rowspan=3, sticky="ns")
 
-        innerRightBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
+        innerRightBorder = ctk.CTkFrame(self.contentFrame, fg_color="#E6C7CC", width=3)
         innerRightBorder.grid(row=0, column=2, rowspan=3, sticky="ns")
 
+        # ********************* !!!!!!!!!!!!!!!!!! ------------------------------
+        
+        self.create_content()
+        
+        self.sidebar = Sidebar(self, controller)
+        self.sidebar.place(x=0, y=0, relheight=1.0)
+        
+  
+    
+    def create_content(self):
+        # Must be implemented by all child classes 
+        raise NotImplementedError
+
+class HomePage(BasePage):
+
+    def create_content(self):
+
+        # *************** !!!!!!!!!!!!!!!!!!! ----------------
+
+        
+
         # Home page content
-        homePageContent = ctk.CTkFrame(contentFrame, fg_color='White', corner_radius=10)
+        homePageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
         homePageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         homePageContent.grid_columnconfigure((0, 1), weight=1)
 
@@ -164,18 +181,9 @@ class HomePage(ctk.CTkFrame):
             font=('Lalezar', 30))
         extractButton.grid(row=1, column=1, padx=20, pady=20, sticky="ew")
 
+class EmbedPage(BasePage):
 
-
-    
-
-
-class EmbedPage(ctk.CTkFrame):
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-        self.controller = controller  # This is to store the controller reference
-
-        self.sidebar=Sidebar(self, controller)
-        self.sidebar.place(x=0, y=0, relheight=1.0)
+    def create_content(self):
 
         #Functions--------------------
 
@@ -315,20 +323,7 @@ class EmbedPage(ctk.CTkFrame):
         #back_button = ctk.CTkButton(embedPage, text="Back to Home", command=lambda: controller.show_frame(HomePage))
         #back_button.pack(pady=10)
 
-class ExtractPage(ctk.CTkFrame):
-    def __init__(self, parent, controller):
-        super().__init__(parent, fg_color="#FEFCFB")
-        self.controller = controller
-        self.menuExpanded = False  # Initialising menuExpanded
-
-        # Configuring the grid
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(0, weight=1)
-
-        # Initialize all UI components
-        self.create_content()
-        self.sidebar=Sidebar(self, controller)
-        self.sidebar.place(x=0, y=0, relheight=1.0)
+class ExtractPage(BasePage):
 
     def create_content(self):
 
@@ -350,47 +345,8 @@ class ExtractPage(ctk.CTkFrame):
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
 
 
-        # Content frame wrapper (for centering the content frame)
-        contentWrapper = ctk.CTkFrame(self, fg_color="transparent")
-        contentWrapper.grid(row=0, column=1, sticky="nsew")
-        contentWrapper.grid_columnconfigure(0, weight=1)
-        contentWrapper.grid_rowconfigure(0, weight=1)
-
-        # Outer content frame (for outer border)
-        outerContentFrame = ctk.CTkFrame(contentWrapper, fg_color="#FEFCFB", corner_radius=10)
-        outerContentFrame.grid(row=0, column=0, padx=20, pady=20)
-        outerContentFrame.grid_columnconfigure(1, weight=1)
-        outerContentFrame.grid_rowconfigure(1, weight=1)
-
-        # Outer borders
-        outerBottomBorder = ctk.CTkFrame(outerContentFrame, fg_color="#F2E2E5", height=5)
-        outerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
-
-        # will likely remove outer left/right borders permanently
-        outer_right_border = ctk.CTkFrame(outerContentFrame, fg_color="#F5E8EA", width=3)
-        #outer_right_border.grid(row=0, column=2, rowspan=3, sticky="ns")
-
-        # Content frame 
-        contentFrame = ctk.CTkFrame(outerContentFrame, fg_color="#FEFCFB", corner_radius=10)
-        contentFrame.grid(row=1, column=1, sticky="nsew")
-        contentFrame.grid_columnconfigure(1, weight=1)
-        contentFrame.grid_rowconfigure(1, weight=1)
-
-        # Setting a fixed size for the content frame here
-        contentFrame.configure(width=800, height=600)
-        contentFrame.grid_propagate(False)  # This prevents the frame from shrinking
-
-        innerBottomBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", height=8)
-        innerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
-
-        innerLeftBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
-        innerLeftBorder.grid(row=0, column=0, rowspan=3, sticky="ns")
-
-        innerRightBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
-        innerRightBorder.grid(row=0, column=2, rowspan=3, sticky="ns")
-
         # Extract page content
-        extractPageContent = ctk.CTkFrame(contentFrame, fg_color='White', corner_radius=10)
+        extractPageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
         extractPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         extractPageContent.grid_columnconfigure((0, 1), weight=1)
  
@@ -434,65 +390,11 @@ class ExtractPage(ctk.CTkFrame):
        # deleteButton = ctk.CTkButton(master=extractPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
        # deleteButton.grid(row=3, column=2)
 
-class AboutPage(ctk.CTkFrame): # FIX NAV TO HERE IN HOMEPAGE CLASS
-    def __init__(self, parent, controller):
-        super().__init__(parent, fg_color="#FEFCFB")
-        self.controller = controller
-        self.menuExpanded = False  # Initialising menuExpanded
-
-        # Configuring the grid
-        self.grid_columnconfigure(1, weight=1)
-        self.grid_rowconfigure(0, weight=1)
-
-        # Initialize all UI components
-        self.create_content()
-        self.sidebar=Sidebar(self, controller)
-        self.sidebar.place(x=0, y=0, relheight=1.0)
-
+class AboutPage(BasePage):
 
     def create_content(self):
 
-        # Content frame wrapper (for centering the content frame)
-        contentWrapper = ctk.CTkFrame(self, fg_color="transparent")
-        contentWrapper.grid(row=0, column=1, sticky="nsew")
-        contentWrapper.grid_columnconfigure(0, weight=1)
-        contentWrapper.grid_rowconfigure(0, weight=1)
-
-        # Outer content frame (for outer border)
-        outerContentFrame = ctk.CTkFrame(contentWrapper, fg_color="#FEFCFB", corner_radius=10)
-        outerContentFrame.grid(row=0, column=0, padx=20, pady=20)
-        outerContentFrame.grid_columnconfigure(1, weight=1)
-        outerContentFrame.grid_rowconfigure(1, weight=1)
-
-        # Outer borders
-        outerBottomBorder = ctk.CTkFrame(outerContentFrame, fg_color="#F2E2E5", height=5)
-        outerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
-
-        # will likely remove outer left/right borders permanently
-        outer_right_border = ctk.CTkFrame(outerContentFrame, fg_color="#F5E8EA", width=3)
-        #outer_right_border.grid(row=0, column=2, rowspan=3, sticky="ns")
-
-        # Content frame 
-        contentFrame = ctk.CTkFrame(outerContentFrame, fg_color="#FEFCFB", corner_radius=10)
-        contentFrame.grid(row=1, column=1, sticky="nsew")
-        contentFrame.grid_columnconfigure(1, weight=1)
-        contentFrame.grid_rowconfigure(1, weight=1)
-
-        # Setting a fixed size for the content frame here
-        contentFrame.configure(width=800, height=600)
-        contentFrame.grid_propagate(False)  # This prevents the frame from shrinking
-
-        innerBottomBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", height=8)
-        innerBottomBorder.grid(row=2, column=0, columnspan=3, sticky="ew")
-
-        innerLeftBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
-        innerLeftBorder.grid(row=0, column=0, rowspan=3, sticky="ns")
-
-        innerRightBorder = ctk.CTkFrame(contentFrame, fg_color="#E6C7CC", width=3)
-        innerRightBorder.grid(row=0, column=2, rowspan=3, sticky="ns")
-
-
-        aboutPageContent = ctk.CTkFrame(contentFrame, fg_color='White', corner_radius=10)
+        aboutPageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
         aboutPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         aboutPageContent.grid_columnconfigure((0, 1), weight=1)
 
@@ -506,7 +408,12 @@ class AboutPage(ctk.CTkFrame): # FIX NAV TO HERE IN HOMEPAGE CLASS
             image=self.backArrow, 
             text="", 
             fg_color="transparent",
-            command=lambda: self.controller.show_frame(HomePage))
+            command=lambda: (
+                self.sidebar.collapse_menu(),
+                self.controller.show_frame(HomePage)
+            )
+        )
+        
         self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
         
         headLabel = ctk.CTkLabel(master=aboutPageContent, text='ABOUT', font=('Lalezar', 50))

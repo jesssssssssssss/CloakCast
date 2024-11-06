@@ -13,6 +13,9 @@ class MainApp(ctk.CTk):
         super().__init__()
         self.title("CloakCast")
         self.geometry("1500x1000")
+
+        # Adding sidebar state to mainapp for consistency
+        self.sidebarExpanded = False
     
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -26,9 +29,12 @@ class MainApp(ctk.CTk):
 
         self.show_frame(HomePage)  
 
+
+
     def show_frame(self, page_class):
         frame = self.frames[page_class]
         frame.tkraise()
+        frame.sidebar.collapse_menu()
 
 
 
