@@ -1,19 +1,23 @@
-#import tkinter as tk
-#from tkinter import ttk
-#from tkinter import font
-#import ttkbootstrap as ttk
+from tkinter import font
+import tkinter as tk
+from pathlib import Path
+import os
+
 import customtkinter as ctk
 from PIL import Image
+from PIL import ImageFont
 
-from pages import HomePage, EmbedPage, ExtractPage, AboutPage, Sidebar
+from pages import HomePage, EmbedPage, ExtractPage, AboutPage, Sidebar, HelpContactPage
 
 
 class MainApp(ctk.CTk):
-    def __init__(self):
+    def __init__(self): 
         super().__init__()
         self.title("CloakCast")
         self.geometry("1500x1000")
 
+        loadLalezarFont()
+        
         # Adding sidebar state to mainapp for consistency
         self.sidebarExpanded = False
     
@@ -22,7 +26,7 @@ class MainApp(ctk.CTk):
 
         self.frames = {}
 
-        for F in (HomePage, EmbedPage, ExtractPage, AboutPage):
+        for F in (HomePage, EmbedPage, ExtractPage, AboutPage, HelpContactPage):
             frame = F(self, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -36,7 +40,19 @@ class MainApp(ctk.CTk):
         frame.tkraise()
         frame.sidebar.collapse_menu()
 
+def loadLalezarFont():
+    try:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        fontPath = os.path.join(current_dir, "fonts", "Lalezar-Regular.ttf")
 
+        ctk.FontManager.load_font(fontPath)
+        print("Lalezar font load success")
+        
+        return True
+
+    except Exception as e:
+        print(f"error loading lalezar font: {e}")
+        return False
 
 if __name__ == "__main__":
     app = MainApp()

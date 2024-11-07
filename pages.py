@@ -63,7 +63,7 @@ class Sidebar(ctk.CTkFrame):
             helpContactButton = ctk.CTkButton(            
                 self.menuFrame, 
                 text="Help / Contact Us", 
-                command=lambda: self.controller.show_frame(AboutPage),
+                command=lambda: self.controller.show_frame(HelpContactPage),
                 text_color='White',
                 fg_color='transparent',
                 corner_radius=10,
@@ -156,8 +156,8 @@ class HomePage(BasePage):
 
 
         # CloakCast label
-        label = ctk.CTkLabel(homePageContent, text="CloakCast", font=("Lalezar", 70), text_color="#a63a50", fg_color="white")
-        label.grid(row=0, column=0, padx=20, pady=20, sticky="ew", columnspan=2)
+        label = ctk.CTkLabel(homePageContent, text="CloakCast", font=("Lalezar", 130), text_color="#a63a50", fg_color="white")
+        label.grid(row=0, column=0, padx=10, pady=20, sticky="ew", columnspan=2)
 
         # Embed button
         embedButton = ctk.CTkButton(
@@ -167,8 +167,8 @@ class HomePage(BasePage):
             text_color='White',
             fg_color='#393839',
             corner_radius=10,
-            font=('Lalezar', 30))
-        embedButton.grid(row=1, column=0, padx=20, pady=20, sticky="ew")
+            font=('Lalezar', 60))
+        embedButton.grid(row=1, column=0, padx=20, pady=15, ipadx=20, ipady=5)
 
         # Extract button
         extractButton = ctk.CTkButton(            
@@ -178,8 +178,8 @@ class HomePage(BasePage):
             text_color='White',
             fg_color='#393839',
             corner_radius=10,
-            font=('Lalezar', 30))
-        extractButton.grid(row=1, column=1, padx=20, pady=20, sticky="ew")
+            font=('Lalezar', 60))
+        extractButton.grid(row=1, column=1, padx=20, pady=15, ipadx=20, ipady=5)
 
 class EmbedPage(BasePage):
 
@@ -320,9 +320,6 @@ class EmbedPage(BasePage):
         deleteButton = ctk.CTkButton(master=embedPageContent, text='x', width=3) #Trash icon button placeholder
         deleteButton.grid(row=4, column=4)
         
-        #back_button = ctk.CTkButton(embedPage, text="Back to Home", command=lambda: controller.show_frame(HomePage))
-        #back_button.pack(pady=10)
-
 class ExtractPage(BasePage):
 
     def create_content(self):
@@ -430,7 +427,33 @@ class AboutPage(BasePage):
             font=('Lalezar', 30))
         aButton.grid(row=2, column=0, padx=20, pady=20, sticky="ew")
 
+class HelpContactPage(BasePage):
+    def create_content(self):
 
+        helpContactPageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
+        helpContactPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
+        helpContactPageContent.grid_columnconfigure((0, 1), weight=1)
+
+        # Back arrow that returns user to home
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
+
+        self.backArrow = ctk.CTkImage(light_image=Image.open(backArrowPath), size=(40,40))
+        self.backArrowButton = ctk.CTkButton(
+            helpContactPageContent, 
+            image=self.backArrow, 
+            text="", 
+            fg_color="transparent",
+            command=lambda: (
+                self.sidebar.collapse_menu(),
+                self.controller.show_frame(HomePage)
+            )
+        )
+        
+        self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
+        
+        headLabel = ctk.CTkLabel(master=helpContactPageContent, text='Help / Contact Us', font=('Lalezar', 50))
+        headLabel.grid(row=1, column=1, sticky="w")
 
 
 
