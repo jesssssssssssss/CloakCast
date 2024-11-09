@@ -15,7 +15,12 @@ class Sidebar(ctk.CTkFrame):
         self.menuExpanded = controller.sidebarExpanded
 
         self.configure(width=self.collapsedWidth)
-        self.grid_rowconfigure(1, weight=1)
+
+        self.grid_rowconfigure(0, weight=0)  # Logo row
+        self.grid_rowconfigure(1, weight=0)  # Menu icon row
+        self.grid_rowconfigure(2, weight=1)  # Remaining space
+
+        self.grid_columnconfigure(0, weight=1)
         self.grid_propagate(False)
 
         #Logo changes:
@@ -38,8 +43,11 @@ class Sidebar(ctk.CTkFrame):
             image=self.menuIcon, 
             text="", 
             fg_color="transparent", 
+            hover_color="#2d2d2d",
+            width=40, 
+            height=40,  
             command=self.toggleMenu)
-        self.menuIconButton.grid(row=1, column=0, sticky="new", padx=(0,0), ipadx=0, ipady=0)
+        self.menuIconButton.grid(row=1, column=0,  pady=(0, 20))
         
 
         # Menu Frame (initially hidden)
@@ -145,19 +153,15 @@ class HomePage(BasePage):
 
     def create_content(self):
 
-        # *************** !!!!!!!!!!!!!!!!!!! ----------------
-
-        
-
         # Home page content
         homePageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
         homePageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         homePageContent.grid_columnconfigure((0, 1), weight=1)
 
-
+# * ***********
         # CloakCast label
-        label = ctk.CTkLabel(homePageContent, text="CloakCast", font=("Lalezar", 130), text_color="#a63a50", fg_color="white")
-        label.grid(row=0, column=0, padx=10, pady=20, sticky="ew", columnspan=2)
+        label = ctk.CTkLabel(homePageContent, text="CloakCast", font=("Lalezar", 120), text_color="#a63a50", fg_color="white")
+        label.grid(row=0, column=0, padx=10, pady=(10, 0), sticky="ew", columnspan=2)
 
         # Embed button
         embedButton = ctk.CTkButton(
@@ -167,8 +171,11 @@ class HomePage(BasePage):
             text_color='White',
             fg_color='#393839',
             corner_radius=10,
-            font=('Lalezar', 60))
-        embedButton.grid(row=1, column=0, padx=20, pady=15, ipadx=20, ipady=5)
+            font=('Lalezar', 45), 
+            width=160,  
+            height=20)   
+      
+        embedButton.grid(row=1, column=0, padx=(100, 0), pady=(0, 15), ipadx=15, ipady=0)
 
         # Extract button
         extractButton = ctk.CTkButton(            
@@ -178,8 +185,32 @@ class HomePage(BasePage):
             text_color='White',
             fg_color='#393839',
             corner_radius=10,
-            font=('Lalezar', 60))
-        extractButton.grid(row=1, column=1, padx=20, pady=15, ipadx=20, ipady=5)
+            font=('Lalezar', 45),
+            width=160,  
+            height=20   
+        )
+        extractButton.grid(row=1, column=1, padx=(0, 100), pady=(0, 15), ipadx=15, ipady=0)
+
+        hpTextFrame = ctk.CTkFrame(
+            homePageContent,
+            fg_color="#2d2d2d",
+            corner_radius=8
+        )
+        hpTextFrame.grid(row=2, column=0, padx=100, pady=40, columnspan=2)
+
+
+        hpScrollBox = ctk.CTkTextbox(
+            hpTextFrame,
+            width=485,
+            height=200,
+            fg_color="white",
+            text_color="black",
+            corner_radius=8,
+            font=("Arial", 16),
+            wrap="word"  
+        )
+        hpScrollBox.grid(row=0, column=0, padx=15, pady=15)
+        hpScrollBox.insert("1.0", "How this works Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet odio ullamcorper, dictum libero non, facilisis magna. Fusce id pulvinar neque, ut pretium odio. Nunc finibus ante nec massa dictum vestibulum. Etiam id consequat purus, quis dapibus est.Aliquam viverra vitae lectus in vehicula. In ac diam ac justo tincidunt efficitur.")
 
 class EmbedPage(BasePage):
 
@@ -347,8 +378,6 @@ class ExtractPage(BasePage):
         extractPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         extractPageContent.grid_columnconfigure((0, 1), weight=1)
  
-        
-
         # Back arrow that returns user to home
         current_dir = os.path.dirname(os.path.abspath(__file__))
         backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
