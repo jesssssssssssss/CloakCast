@@ -4,10 +4,9 @@ from pathlib import Path
 import os
 
 import customtkinter as ctk
-from PIL import Image
-from PIL import ImageFont
 
-from pages import HomePage, EmbedPage, ExtractPage, AboutPage, Sidebar, HelpContactPage
+
+from pages import HomePage, EmbedPage, ExtractPage, AboutPage, HelpContactPage
 
 
 class MainApp(ctk.CTk):
