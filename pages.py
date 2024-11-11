@@ -10,7 +10,7 @@ class Sidebar(ctk.CTkFrame):
         self.controller=controller
         self.menuExpanded=False
         self.collapsedWidth=100
-        self.expandedWidth=265
+        self.expandedWidth=275
 
         self.menuExpanded = controller.sidebarExpanded
 
@@ -51,32 +51,47 @@ class Sidebar(ctk.CTkFrame):
         
 
         # Menu Frame (initially hidden)
-        self.menuFrame = ctk.CTkFrame(self, fg_color="#2d2d2d", corner_radius=8)
+        self.menuFrame = ctk.CTkFrame(self, fg_color="#393839", corner_radius=8)
 
     def toggleMenu(self):
         if not self.menuExpanded:
             self.configure(width = self.expandedWidth)
-            self.menuFrame.grid(row=1, column=0, padx=5, pady=(5, 5), sticky="new")
+
+            self.logoLabel.grid(row=0, column=0, padx=10, pady=(50, 30), sticky="n")
+
+            self.menuFrame.grid(row=1, column=0, padx=20, pady=(70, 5), sticky="new")
+            self.menuFrame.grid_columnconfigure(0, weight=1)  
+
             # About button
             aboutButton = ctk.CTkButton(            
                 self.menuFrame, 
                 text="About", 
                 command=lambda: self.controller.show_frame(AboutPage),
-                text_color='White',
+                text_color='#a63a50',
                 fg_color='transparent',
+                hover_color="#393839",  
                 corner_radius=10,
-                anchor="w")
-            aboutButton.grid(row=1, column=1, padx=20, pady=20, sticky="ew")
+                anchor="center",  
+                width=200,  
+                height=40,  
+                font=("Lalezar", 26)  
+            )
+            aboutButton.grid(row=1, column=0, padx=10, pady=10, sticky="ew")
 
             helpContactButton = ctk.CTkButton(            
                 self.menuFrame, 
                 text="Help / Contact Us", 
                 command=lambda: self.controller.show_frame(HelpContactPage),
-                text_color='White',
+                text_color='#a63a50',
                 fg_color='transparent',
+                hover_color="#393839",  # change hover colour soon 
                 corner_radius=10,
-                anchor="w")
-            helpContactButton.grid(row=2, column=1, padx=20, pady=20, sticky="ew")
+                anchor="center",  
+                width=200,  
+                height=40,  
+                font=("Lalezar", 26)  
+            )
+            helpContactButton.grid(row=2, column=0, padx=10, pady=10, sticky="ew")
 
         else:
             self.collapse_menu()
