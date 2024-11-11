@@ -244,18 +244,37 @@ class EmbedPage(BasePage):
           filePath = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
           if filePath:
            #Chosen audio display
-            fileName = os.path.basename(filePath) #Gets only the file name
-            selectedAudioFile.set(fileName) #updates the string
-            print(f"Selected file: {fileName}")
+            selectedAudioFile.set(filePath) #updates the string
+            print(f"Selected file: {filePath}")
  
         #Function to delete selected audio file
         def deleteAudio():
             selectedAudioFile.set("No File Selected")
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
 
+        def encoder():
+            #Getting hidden data
+            data = dataInput.get()
+
+            #Getting chosen audio file
+            audioPath = selectedAudioFile.get()
+            #Image to cover audio is set
+            imgName = 'smile.png'
+            audio = load(audioPath) #Opens the audio
+
+            #Opens the image and puts the secret text inside saves it
+            img = Image.open(imgName)
+            imgStegano = encode(img, data.encode())
+            imgStegano.save(imgName)
+
+            #Making the image the cover of the audio
+            audio.initTag()
+            audio.tag.images.set(3, open(imgName, "rb").read(), "image/png")
+            audio.tag.save()
+            print("Encoding complete")
+
         def submitAction():
-                secretData = dataInput.get() #taking user's text input
-                print(secretData)
+            encoder() #Running the encode function when clicked
 
         #Content--------------------
 
@@ -362,8 +381,7 @@ class EmbedPage(BasePage):
                                     border_color='#393839',
                                     corner_radius = 10,
                                     fg_color= '#FFFFFF',
-                                    font=('Lalezar', 30),
-                                    command = submitAction) 
+                                    font=('Lalezar', 30)) 
         audioUploadButton.grid(row=3, column=3, pady=20)
         
         #Chosen text file display placeholder
@@ -383,7 +401,8 @@ class EmbedPage(BasePage):
                                     text_color='#FFFFFF',
                                     corner_radius = 10,
                                     fg_color= '#a63a50',
-                                    font=('Lalezar', 30))
+                                    font=('Lalezar', 30),
+                                    command = submitAction)
         submitButton.grid(row=8,column=2)
         
 class ExtractPage(BasePage):
