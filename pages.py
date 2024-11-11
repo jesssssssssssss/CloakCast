@@ -1,9 +1,10 @@
 import customtkinter as ctk
 import customtkinter
 from PIL import Image
-import os
+import os 
+from os import system
 from tkinter import filedialog
-from stepic import encode
+from stepic import encode, decode
 from eyed3 import load
 from PIL import Image
 
@@ -412,19 +413,40 @@ class ExtractPage(BasePage):
         #Functions--------------------
 
         #Variable holding selected audio file
-        selectedAudioFile = ctk.StringVar()
-        selectedAudioFile = set("No File Selected")
+        selectedAudioFile = ctk.StringVar(value="No File Selected")
  
         #Function to browse and open audio file
         def openAudioFile():
           filePath = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
           if filePath:
-           print(f"Selected file: {filePath}")
+           #Chosen audio display
+            selectedAudioFile.set(filePath) #updates the string
+            print(f"Selected file: {filePath}")
  
         #Function to delete selected audio file
         def deleteAudio():
             selectedAudioFile = set("No File Selected")
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
+
+        def decoder():
+            #Audio to be extracted is chosen and loaded
+            audioPath = selectedAudioFile.get()
+            audio = load(audioPath)
+
+            #Creating an image to save the secret text to, from the cover of the song
+            img = open("tempImg.png","wb")
+            img.write(audio.tag.images[0].image_data)
+            img.close()
+
+            #The secret text is save in the temp image
+            img = Image.open("tempImg.png")
+            text = decode(img)
+            system("del tempImg.png") #Deleting the temp image
+            print("Data is: "+ str(text)) #Displaying the text
+
+
+        def extractAction():
+            decoder() #Running the encode function when clicked
 
 
         # Extract page content
@@ -458,14 +480,22 @@ class ExtractPage(BasePage):
         audioUploadButton.grid(row=0, column=1, sticky="w", pady=120, ipadx=10, ipady=10)
 
 
-
         #Chosen audio display 
         audioFileLabel = ctk.CTkLabel(master=extractPageContent,
                                     textvariable= selectedAudioFile,
-                                    fg_color= 'blue',
+                                    fg_color= '#FFFFFF',
                                     corner_radius = 10)
         audioFileLabel.grid(row=1, column=1, sticky="w", padx=50, columnspan=1)
-        
+
+        #Submit button--------------------
+        extractButton = ctk.CTkButton(master=extractPageContent,
+                                    text='Submit',
+                                    text_color='#FFFFFF',
+                                    corner_radius = 10,
+                                    fg_color= '#a63a50',
+                                    font=('Lalezar', 30),
+                                    command = extractAction)
+        extractButton.grid(row=8,column=2)
         #Delete button for chosen audio file display
        # deleteButton = ctk.CTkButton(master=extractPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
        # deleteButton.grid(row=3, column=2)
