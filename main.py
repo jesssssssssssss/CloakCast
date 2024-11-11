@@ -45,7 +45,6 @@ def loadLalezarFont():
         fontPath = os.path.join(current_dir, "fonts", "Lalezar-Regular.ttf")
 
         ctk.FontManager.load_font(fontPath)
-        print("Lalezar font load success")
         
         return True
 
