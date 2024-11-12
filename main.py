@@ -6,7 +6,7 @@ import os
 import customtkinter as ctk
 
 
-from pages import HomePage, EmbedPage, ExtractPage, AboutPage, HelpContactPage
+from pages import HomePage, EmbedPage, ExtractPage, HowToUsePage, HelpContactPage
 
 
 class MainApp(ctk.CTk):
@@ -16,6 +16,7 @@ class MainApp(ctk.CTk):
         self.geometry("1500x1000")
 
         loadLalezarFont()
+        loadSnigletFont()
         
         # Adding sidebar state to mainapp for consistency
         self.sidebarExpanded = False
@@ -25,7 +26,7 @@ class MainApp(ctk.CTk):
 
         self.frames = {}
 
-        for F in (HomePage, EmbedPage, ExtractPage, AboutPage, HelpContactPage):
+        for F in (HomePage, EmbedPage, ExtractPage, HowToUsePage, HelpContactPage):
             frame = F(self, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -50,6 +51,19 @@ def loadLalezarFont():
 
     except Exception as e:
         print(f"error loading lalezar font: {e}")
+        return False
+    
+def loadSnigletFont():
+    try:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        fontPath = os.path.join(current_dir, "fonts", "Sniglet-Regular.ttf")
+
+        ctk.FontManager.load_font(fontPath)
+        
+        return True
+
+    except Exception as e:
+        print(f"error loading sniglet font: {e}")
         return False
 
 if __name__ == "__main__":
