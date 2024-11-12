@@ -69,8 +69,8 @@ class Sidebar(ctk.CTkFrame):
             # About button
             aboutButton = ctk.CTkButton(            
                 self.menuFrame, 
-                text="About", 
-                command=lambda: self.controller.show_frame(AboutPage),
+                text="How To Use", 
+                command=lambda: self.controller.show_frame(HowToUsePage),
                 text_color='#a63a50',
                 fg_color='transparent',
                 hover_color="#393839",  
@@ -500,13 +500,13 @@ class ExtractPage(BasePage):
        # deleteButton = ctk.CTkButton(master=extractPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
        # deleteButton.grid(row=3, column=2)
 
-class AboutPage(BasePage):
+class HowToUsePage(BasePage):
 
     def create_content(self):
 
-        aboutPageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
-        aboutPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
-        aboutPageContent.grid_columnconfigure((0, 1), weight=1)
+        htuPageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
+        htuPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
+        htuPageContent.grid_columnconfigure((0, 1), weight=1)
 
         # Back arrow that returns user to home
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -514,7 +514,7 @@ class AboutPage(BasePage):
 
         self.backArrow = ctk.CTkImage(light_image=Image.open(backArrowPath), size=(40,40))
         self.backArrowButton = ctk.CTkButton(
-            aboutPageContent, 
+            htuPageContent, 
             image=self.backArrow, 
             text="", 
             fg_color="transparent",
@@ -524,21 +524,166 @@ class AboutPage(BasePage):
             )
         )
         
-        self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
+        self.backArrowButton.grid(row=0, column=0, padx=(20, 0), pady=(20, 0), sticky="nw")
         
-        headLabel = ctk.CTkLabel(master=aboutPageContent, text='ABOUT', font=('Lalezar', 50))
-        headLabel.grid(row=1, column=1, sticky="w")
+        headLabel = ctk.CTkLabel(
+            master=htuPageContent, 
+            text='How To Use CloakCast', 
+            text_color="#A63A50",
+            font=('Sniglet', 50)
+        )
+        headLabel.grid(row=0, column=0, columnspan=2, pady=(20, 5), sticky="n")  
 
-         # Embed button
-        aButton = ctk.CTkButton(
-            aboutPageContent, 
-            text="Im a button xx", 
-            command=lambda: self.controller.show_frame(EmbedPage),
-            text_color='White',
-            fg_color='#393839',
+        # terms and definitions 
+
+        coverMediaLabel = ctk.CTkLabel(
+            htuPageContent,
+            text="Cover Media",
+            font=('Lalezar', 24),
+            text_color="#A63A50",
+            justify="right"
+        )
+        coverMediaLabel.grid(row=1, column=0, padx=(40, 20), pady=20, sticky="e")
+
+        coverMediaDefFrame = ctk.CTkFrame(
+            htuPageContent,
+            fg_color="#2d2d2d",
+            corner_radius=10
+        )
+        coverMediaDefFrame.grid(row=1, column=1, padx=(20, 40), pady=5, sticky="w")
+
+        coverMediaDef = ctk.CTkTextbox(
+            coverMediaDefFrame,
+            height=60,
+            width=400,
+            fg_color="white",
+            text_color="black",
             corner_radius=10,
-            font=('Lalezar', 30))
-        aButton.grid(row=2, column=0, padx=20, pady=20, sticky="ew")
+            font=("Arial", 16)
+        )
+        coverMediaDef.grid(row=0, column=0, padx=10, pady=6)
+        coverMediaDef.insert("1.0", "This is the audio that you would like to hide your\nmessage, or data, inside of.")
+        coverMediaDef.configure(state="disabled") 
+
+        
+        hiddenDataLabel = ctk.CTkLabel(
+            htuPageContent,
+            text="Hidden Data",
+            font=('Lalezar', 24),
+            text_color="#A63A50",
+            justify="right"
+        )
+        hiddenDataLabel.grid(row=2, column=0, padx=(40, 20), pady=20, sticky="e")
+
+        hiddenDataDefFrame = ctk.CTkFrame(
+            htuPageContent,
+            fg_color="#2d2d2d",
+            corner_radius=10
+        )
+        hiddenDataDefFrame.grid(row=2, column=1, padx=(20, 40), pady=5, sticky="w")
+
+        hiddenDataDef = ctk.CTkTextbox(
+            hiddenDataDefFrame,
+            height=60,
+            width=400,
+            fg_color="white",
+            text_color="black",
+            corner_radius=8,
+            font=("Arial", 16)
+        )
+        hiddenDataDef.grid(row=0, column=0, padx=10, pady=6)
+        hiddenDataDef.insert("1.0", "The ‘Hidden Data’ is the message that you would like\nto hide, or cover, with an audio.")
+        hiddenDataDef.configure(state="disabled")
+
+              
+        accessCodeLabel = ctk.CTkLabel(
+            htuPageContent,
+            text="Access Code",
+            font=('Lalezar', 24),
+            text_color="#A63A50",
+            justify="right"
+        )
+        accessCodeLabel.grid(row=3, column=0, padx=(40, 20), pady=20, sticky="e")
+
+        accessCodeDefFrame = ctk.CTkFrame(
+            htuPageContent,
+            fg_color="#2d2d2d",
+            corner_radius=10
+        )
+        accessCodeDefFrame.grid(row=3, column=1, padx=(20, 40), pady=5, sticky="w")
+
+        accessCodeDef = ctk.CTkTextbox(
+            accessCodeDefFrame,
+            height=80,
+            width=400,
+            fg_color="white",
+            text_color="black",
+            corner_radius=8,
+            font=("Arial", 16)
+        )
+        accessCodeDef.grid(row=0, column=0, padx=10, pady=6)
+        accessCodeDef.insert("1.0", "You can add an access code to further secure your \ndata. This acts as a password that will need to be \nentered before your file can be extracted.")
+        accessCodeDef.configure(state="disabled")
+
+        embedLabel = ctk.CTkLabel(
+            htuPageContent,
+            text="Embed",
+            font=('Lalezar', 24),
+            text_color="#A63A50",
+            justify="right"
+        )
+        embedLabel.grid(row=4, column=0, padx=(40, 20), pady=20, sticky="e")
+
+        embedDefFrame = ctk.CTkFrame(
+            htuPageContent,
+            fg_color="#2d2d2d",
+            corner_radius=10
+        )
+        embedDefFrame.grid(row=4, column=1, padx=(20, 40), pady=5, sticky="w")
+
+        embedDef = ctk.CTkTextbox(
+            embedDefFrame,
+            height=93,
+            width=400,
+            fg_color="white",
+            text_color="black",
+            corner_radius=8,
+            font=("Arial", 16)
+        )
+        embedDef.grid(row=0, column=0, padx=10, pady=6)
+        embedDef.insert("1.0", "Once inputting the required information on the Embed page, simply click the ‘Embed Audio’ button. This will \ntake you to a page where you can download your \nhidden data.")
+        embedDef.configure(state="disabled")
+
+        extractLabel = ctk.CTkLabel(
+            htuPageContent,
+            text="Extract",
+            font=('Lalezar', 24),
+            text_color="#A63A50",
+            justify="right"
+        )
+        extractLabel.grid(row=5, column=0, padx=(40, 20), pady=20, sticky="e")
+
+        extractDefFrame = ctk.CTkFrame(
+            htuPageContent,
+            fg_color="#2d2d2d",
+            corner_radius=10
+        )
+        extractDefFrame.grid(row=5, column=1, padx=(20, 40), pady=20, sticky="w")
+
+        extractDef = ctk.CTkTextbox(
+            extractDefFrame,
+            height=60,
+            width=400,
+            fg_color="white",
+            text_color="black",
+            corner_radius=8,
+            font=("Arial", 16)
+        )
+        extractDef.grid(row=0, column=0, padx=10, pady=6)
+        extractDef.insert("1.0", "After uploading the embedded file, select the ‘Extract’ button to view the hidden data.")
+        extractDef.configure(state="disabled")
+
+
 
 class HelpContactPage(BasePage):
     def create_content(self):
