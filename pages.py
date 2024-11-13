@@ -283,8 +283,6 @@ class EmbedPage(BasePage):
         embedPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         embedPageContent.grid_columnconfigure((0,1), weight=1)
 
-
-
         current_dir = os.path.dirname(os.path.abspath(__file__))
 
         backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
@@ -306,13 +304,14 @@ class EmbedPage(BasePage):
         #Audio upload button
         audioUploadButton = ctk.CTkButton(master=embedPageContent,
                                     text='Upload Audio',
-                                    text_color='#a63a50',
-                                    border_width= 3,
+                                    text_color='#393839',
+                                    border_width= 7,
                                     border_color='#393839',
-                                    corner_radius = 10,
+                                    corner_radius = 100,
                                     fg_color= '#FFFFFF',
-                                    font=('Lalezar', 30),
-                                    command=openAudioFile) 
+                                    font=('Lalezar', 24),
+                                    command=openAudioFile,
+                                    height=50) 
         audioUploadButton.grid(row=2, column=0, pady=20)
         
         
@@ -374,12 +373,12 @@ class EmbedPage(BasePage):
         dataInput = ctk.CTkEntry(master=embedPageContent, placeholder_text='Enter Message...', placeholder_text_color='#393839')
         dataInput.grid(row=1, column=3)
         
-        #or
+                #or
         orLabel = ctk.CTkLabel(master=embedPageContent, text='Or', font=('Lalezar', 20))
         orLabel.grid(row=2, column=3)
         
         #Text file upload button
-        audioUploadButton = ctk.CTkButton(master=embedPageContent,
+        fileUploadButton = ctk.CTkButton(master=embedPageContent,
                                     text='Upload File',
                                     text_color='#a63a50',
                                     border_width= 3,
@@ -387,7 +386,7 @@ class EmbedPage(BasePage):
                                     corner_radius = 10,
                                     fg_color= '#FFFFFF',
                                     font=('Lalezar', 30)) 
-        audioUploadButton.grid(row=3, column=3, pady=20)
+        fileUploadButton.grid(row=3, column=3, pady=20)
         
         #Chosen text file display placeholder
         fileUploadLabel = ctk.CTkLabel(master=embedPageContent,
