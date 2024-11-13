@@ -6,7 +6,7 @@ import os
 import customtkinter as ctk
 
 
-from pages import HomePage, EmbedPage, ExtractPage, HowToUsePage, HelpContactPage
+from pages import HomePage, EmbedPage, ExtractPage, HowToUsePage, HelpContactPage, EmbedSuccessPage
 
 
 class MainApp(ctk.CTk):
@@ -26,7 +26,7 @@ class MainApp(ctk.CTk):
 
         self.frames = {}
 
-        for F in (HomePage, EmbedPage, ExtractPage, HowToUsePage, HelpContactPage):
+        for F in (HomePage, EmbedPage, ExtractPage, HowToUsePage, HelpContactPage, EmbedSuccessPage):
             frame = F(self, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")

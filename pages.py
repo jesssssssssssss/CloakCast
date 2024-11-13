@@ -266,7 +266,7 @@ class EmbedPage(BasePage):
             # Validating access codes matching
             if accessCode != confirmCode:
                 self.statusLabel.configure(text="Access codes do not match!", text_color='#a63a50')
-                return
+                return False #Returning false if codes don't match
             
             try:
                 
@@ -286,12 +286,15 @@ class EmbedPage(BasePage):
                 audio.initTag()
                 audio.tag.images.set(3, open(imgName, "rb").read(), "image/png")
                 audio.tag.save()
-                self.statusLabel.configure(text="Successful!", text_color='#28a745') 
+                #self.statusLabel.configure(text="Successful!", text_color='#28a745')
+                return True # Returns true if successful 
             except Exception as e:
                 self.statusLabel.configure(text=f"Failed to encrypt and embed data: {str(e)}", text_color='#a63a50')
+                return False #Returns false id there is an error
 
         def submitAction():
-            encoder() #Running the encode function when clicked
+            if encoder(): #CHecks if encoder was successful and then open success page
+                self.controller.show_frame(EmbedSuccessPage)
 
         def reset_page():
            
@@ -467,6 +470,45 @@ class EmbedPage(BasePage):
             font=('Lalezar', 16)
         )
         self.statusLabel.grid(row=9, column=2, pady=(10,0)) 
+
+class EmbedSuccessPage(BasePage):
+ 
+    def create_content(self):
+ 
+        embedSuccessContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
+        embedSuccessContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
+        embedSuccessContent.grid_columnconfigure((0, 1), weight=1)
+ 
+        #Functions
+ 
+        #returns user back to home page on click
+        def returnAction():
+            self.controller.show_frame(HomePage)
+ 
+        #Audio embedded success label
+        embedSuccessLabel = ctk.CTkLabel(master=embedSuccessContent,
+                                    text='Audio Embedded Successfully!',
+                                    text_color= '#a63a50',
+                                    font=('Lalezar', 30),
+                                    corner_radius = 10)
+        embedSuccessLabel.grid(row=0, column=0, padx=(130,0), pady=(200,0))
+ 
+        #Button to return to home page
+        returnHomeButton = ctk.CTkButton(master=embedSuccessContent,
+                                         text='Return Home',
+                                         text_color='#FFFFFF',
+                                         corner_radius = 10,
+                                         fg_color= '#a63a50',
+                                         font=('Lalezar', 30),
+                                         command= returnAction)
+        returnHomeButton.grid(row=1, column=0, padx=(130,0))
+ 
+        #Displaying audio file path
+        #audioFileLabel = ctk.CTkLabel(master=self,
+         #                           text= ,
+          #                          corner_radius = 10,
+          #                          fg_color= '#000000')
+        #audioFileLabel.grid(row=1, column=0, columnspan=2, padx=20, pady=(10, 20), sticky="ew")
         
 class ExtractPage(BasePage):
  
