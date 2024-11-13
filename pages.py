@@ -410,11 +410,11 @@ class EmbedPage(BasePage):
         submitButton.grid(row=8,column=2)
         
 class ExtractPage(BasePage):
-
+ 
     def create_content(self):
-
+ 
         #Functions--------------------
-
+ 
         #Variable holding selected audio file
         selectedAudioFile = ctk.StringVar(value="No File Selected")
  
@@ -430,28 +430,27 @@ class ExtractPage(BasePage):
         def deleteAudio():
             selectedAudioFile = set("No File Selected")
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
-
+ 
         def decoder():
             #Audio to be extracted is chosen and loaded
             audioPath = selectedAudioFile.get()
             audio = load(audioPath)
-
+ 
             #Creating an image to save the secret text to, from the cover of the song
             img = open("tempImg.png","wb")
             img.write(audio.tag.images[0].image_data)
             img.close()
-
+ 
             #The secret text is save in the temp image
             img = Image.open("tempImg.png")
             text = decode(img)
             system("del tempImg.png") #Deleting the temp image
             print("Data is: "+ str(text)) #Displaying the text
-
-
+ 
+ 
         def extractAction():
-            decoder() #Running the encode function when clicked
-
-
+            decoder() #Running the decoder function when clicked
+ 
         # Extract page content
         extractPageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
         extractPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
@@ -460,45 +459,45 @@ class ExtractPage(BasePage):
         # Back arrow that returns user to home
         current_dir = os.path.dirname(os.path.abspath(__file__))
         backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
-
+ 
         self.backArrow = ctk.CTkImage(light_image=Image.open(backArrowPath), size=(40,40))
         self.backArrowButton = ctk.CTkButton(
-            extractPageContent, 
-            image=self.backArrow, 
-            text="", 
+            extractPageContent,
+            image=self.backArrow,
+            text="",
             fg_color="transparent",
             command=lambda: self.controller.show_frame(HomePage))
         self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
-
-
+ 
+ 
         #Audio upload button
         audioUploadButton = ctk.CTkButton(
-            extractPageContent, 
-            text="Upload File", 
+            extractPageContent,
+            text="Upload File",
             command=openAudioFile,
             text_color='White',
             fg_color='#393839',
             corner_radius=100,
             font=('Lalezar', 30))
-        audioUploadButton.grid(row=0, column=1, sticky="w", pady=120, ipadx=10, ipady=10)
-
-
-        #Chosen audio display 
+        audioUploadButton.grid(row=3, column=1, padx=(0,260), pady=(100,20))
+ 
+ 
+        #Chosen audio display
         audioFileLabel = ctk.CTkLabel(master=extractPageContent,
                                     textvariable= selectedAudioFile,
                                     fg_color= '#FFFFFF',
                                     corner_radius = 10)
-        audioFileLabel.grid(row=1, column=1, sticky="w", padx=50, columnspan=1)
-
-        #Submit button--------------------
+        audioFileLabel.grid(row=4, column=1, padx=(0,260), pady=(50,0))
+ 
+        #Extract button--------------------
         extractButton = ctk.CTkButton(master=extractPageContent,
-                                    text='Submit',
+                                    text='Extract',
                                     text_color='#FFFFFF',
                                     corner_radius = 10,
                                     fg_color= '#a63a50',
                                     font=('Lalezar', 30),
                                     command = extractAction)
-        extractButton.grid(row=8,column=2)
+        extractButton.grid(row=7,column=1, padx=(0,260), pady=(90,0))
         #Delete button for chosen audio file display
        # deleteButton = ctk.CTkButton(master=extractPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
        # deleteButton.grid(row=3, column=2)
