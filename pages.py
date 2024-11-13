@@ -279,10 +279,14 @@ class EmbedPage(BasePage):
 
         #Content--------------------
 
-        embedPageContent = ctk.CTkFrame(master = self, fg_color='White') # this is the content window
-        embedPageContent.grid(padx=500, pady=250)
+        embedPageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10) 
+        embedPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
+        embedPageContent.grid_columnconfigure((0,1), weight=1)
+
+
 
         current_dir = os.path.dirname(os.path.abspath(__file__))
+
         backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
 
         self.backArrow = ctk.CTkImage(light_image=Image.open(backArrowPath), size=(40,40))
@@ -682,8 +686,6 @@ class HowToUsePage(BasePage):
         extractDef.grid(row=0, column=0, padx=10, pady=6)
         extractDef.insert("1.0", "After uploading the embedded file, select the ‘Extract’ button to view the hidden data.")
         extractDef.configure(state="disabled")
-
-
 
 class HelpContactPage(BasePage):
     def create_content(self):
