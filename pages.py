@@ -240,7 +240,7 @@ class EmbedPage(BasePage):
         #Variable holding selected audio file
         selectedAudioFile = ctk.StringVar(value="No File Selected")
  
- # ADDING COMMENT HERE TO MARK NEXT SECTION
+
         #Function to browse and open audio file
         def openAudioFile():
           filePath = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
@@ -248,7 +248,7 @@ class EmbedPage(BasePage):
            #Chosen audio display
             selectedAudioFile.set(filePath) #updates the string
             print(f"Selected file: {filePath}")
-            print(f"Selected file: {filePath}") # * style the area calling this function where selectedaudiofile is displayed !
+            print(f"Selected file: {filePath}") # 
  
         #Function to delete selected audio file
         def deleteAudio():
@@ -301,7 +301,7 @@ class EmbedPage(BasePage):
         #Cover Media--------------------
  
         coverMediaLabel = ctk.CTkLabel(master=embedPageContent, text='Cover Media', text_color='#a63a50', font=('lalezar', 40))
-        coverMediaLabel.grid(row=1, column=0)
+        coverMediaLabel.grid(row=1, column=0, padx=(40,0))
         
         #Audio upload button
         audioUploadButton = ctk.CTkButton(master=embedPageContent,
@@ -314,50 +314,70 @@ class EmbedPage(BasePage):
                                     font=('Lalezar', 24),
                                     command=openAudioFile,
                                     height=50) 
-        audioUploadButton.grid(row=2, column=0, pady=20)
+        audioUploadButton.grid(row=2, column=0, pady=(10, 0), padx=(40,0))
         
-        
-        #Chosen audio display, uses selectedAudioFile
-        audioFileLabel = ctk.CTkLabel(master=embedPageContent,
-                                    textvariable= selectedAudioFile,
-                                    corner_radius = 10,
-                                    fg_color= '#FFFFFF')
-        audioFileLabel.grid(row=3, column=0)
+        audioFileLabelFrame = ctk.CTkFrame(
+            embedPageContent,
+            fg_color="#393839",
+            corner_radius=100,
+        )
+        audioFileLabelFrame.grid(row=3, column=0, pady=0, padx=(40,0))
 
-        
+        #Chosen audio display, uses selectedAudioFile
+        audioFileLabel = ctk.CTkLabel(master=audioFileLabelFrame,
+                                    textvariable= selectedAudioFile,
+                                    corner_radius = 100,
+                                    height=35,
+                                    width=260,
+                                    fg_color= '#FFFFFF',
+                                    text_color="#393839")
+        audioFileLabel.grid(row=0, column=0, padx=10, pady=6)
+
         #Delete button for chosen audio file display
         deleteButton = ctk.CTkButton(master=embedPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
-        deleteButton.grid(row=3, column=2)
-        
+        deleteButton.grid(row=3, column=1)
         
         #Access Code--------------------
         
         #Header
         accessCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Access Code', text_color='#a63a50', font=('lalezar', 40))
-        accessCodeLabel.grid(row=4, column=0)
+        accessCodeLabel.grid(row=4, column=0, padx=(40,0))
         
         enterCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Enter Code', text_color='#393839', font=('lalezar', 20))
-        enterCodeLabel.grid(row=5, column=0)
+        enterCodeLabel.grid(row=5, column=0, padx=(40,0))
         
+        inputAccessCodeFrame = ctk.CTkFrame(
+            embedPageContent,
+            fg_color="#393839",
+            corner_radius=100,
+            
+        )
+        inputAccessCodeFrame.grid(row=6, column=0, padx=(40,0))
+
         #Input field
-        inputAccessCode = ctk.CTkEntry(master=embedPageContent)
-        #took away string variable for placeholder text to work
-        inputAccessCode = ctk.CTkEntry(master=embedPageContent, placeholder_text='...', placeholder_text_color='#393839')
-        inputAccessCode.grid(row=6, column=0)
+
+        inputAccessCode = ctk.CTkEntry(master=inputAccessCodeFrame, placeholder_text='...', placeholder_text_color='#393839', fg_color="white", corner_radius=100, width=180, height=28)
+        inputAccessCode.grid(row=6, column=0, padx=5, pady=5)
         
         #View access code button
         viewAccessCode = ctk.CTkButton(master=embedPageContent, text='o', width=3) #eye icon button placeholder
         viewAccessCode.grid(row=6, column=1)
         
         confirmCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Confirm Code', width=50, text_color='#393839', font=('lalezar', 20))
-        confirmCodeLabel.grid(row=7, column=0)
+        confirmCodeLabel.grid(row=7, column=0, padx=(40,0))
         
         #Confirm input field
-        #Input field
-        ConfirmAccessCode = ctk.CTkEntry(master=embedPageContent)
-        #took away string variable for placeholder text to work
-        ConfirmAccessCode = ctk.CTkEntry(master=embedPageContent, placeholder_text='...', placeholder_text_color='#393839')
-        ConfirmAccessCode.grid(row=8, column=0)
+
+        ConfirmAccessCodeFrame = ctk.CTkFrame(
+            embedPageContent,
+            fg_color="#393839",
+            corner_radius=100,
+            
+        )
+        ConfirmAccessCodeFrame.grid(row=8, column=0, padx=(40,0))
+
+        ConfirmAccessCode = ctk.CTkEntry(master=ConfirmAccessCodeFrame, placeholder_text='...', placeholder_text_color='#393839', fg_color="white", corner_radius=100, width=180, height=28)
+        ConfirmAccessCode.grid(row=6, column=0, padx=5, pady=5)
         
         #View confirmed access code button
         viewConfirmedAccessCode = ctk.CTkButton(master=embedPageContent, text='-', width=3) #eye icon button placeholder
@@ -367,17 +387,24 @@ class EmbedPage(BasePage):
         #Hidden Data--------------------
         
         hiddenDataLabel = ctk.CTkLabel(master=embedPageContent, text='Hidden Data', text_color='#a63a50', font=('Lalezar', 40))
-        hiddenDataLabel.grid(row=0, column=3)
+        hiddenDataLabel.grid(row=1, column=3, padx=(0,50))
         
+
+        dataInputFrame = ctk.CTkFrame(
+            embedPageContent,
+            fg_color="#393839",
+            corner_radius=10,
+            
+        )
+        dataInputFrame.grid(row=2, column=3, rowspan=2, padx=(0,50))
+
         #Input field
-        dataInput = ctk.CTkEntry(master=embedPageContent)
-        #took away string variable for placeholder text to work
-        dataInput = ctk.CTkEntry(master=embedPageContent, placeholder_text='Enter Message...', placeholder_text_color='#393839')
-        dataInput.grid(row=1, column=3)
+        dataInput = ctk.CTkEntry(master=dataInputFrame, placeholder_text='Enter Message...', placeholder_text_color='#393839', font=('Sniglet', 20), fg_color="white", width=230, height=130)
+        dataInput.grid(row=2, column=3, padx=5, pady=5, rowspan=2)
         
-                #or
-        orLabel = ctk.CTkLabel(master=embedPageContent, text='Or', font=('Lalezar', 20))
-        orLabel.grid(row=2, column=3)
+        #or
+        orLabel = ctk.CTkLabel(master=embedPageContent, text='or', font=('Sniglet', 24), text_color="#a63a50")
+        orLabel.grid(row=4, column=3, padx=(0,50))
         
         #Text file upload button
         fileUploadButton = ctk.CTkButton(master=embedPageContent,
@@ -388,18 +415,18 @@ class EmbedPage(BasePage):
                                     corner_radius = 10,
                                     fg_color= '#FFFFFF',
                                     font=('Lalezar', 30)) 
-        fileUploadButton.grid(row=3, column=3, pady=20)
+        fileUploadButton.grid(row=5, column=3, pady=20, padx=(0,50))
         
         #Chosen text file display placeholder
         fileUploadLabel = ctk.CTkLabel(master=embedPageContent,
                                     text='fiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiile',
                                     fg_color= 'red',
                                     corner_radius = 10) #File display placeholder
-        fileUploadLabel.grid(row=4, column=3)
+        fileUploadLabel.grid(row=6, column=3)
         
         #Delete button for chosen Text file display
         deleteButton = ctk.CTkButton(master=embedPageContent, text='x', width=3) #Trash icon button placeholder
-        deleteButton.grid(row=4, column=4)
+        deleteButton.grid(row=6, column=4)
 
         #Submit button--------------------
         submitButton = ctk.CTkButton(master=embedPageContent,
