@@ -7,6 +7,9 @@ from tkinter import filedialog
 from stepic import encode, decode
 from eyed3 import load
 from PIL import Image
+from tkinter import messagebox
+import tkinter as tk
+from encryption_utils import EncryptionUtils
 
 class Sidebar(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -239,7 +242,6 @@ class EmbedPage(BasePage):
 
         #Variable holding selected audio file
         selectedAudioFile = ctk.StringVar(value="No File Selected")
- 
 
         #Function to browse and open audio file
         def openAudioFile():
@@ -256,28 +258,48 @@ class EmbedPage(BasePage):
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
 
         def encoder():
-            #Getting hidden data
+            #Getting hidden data and access code
             data = dataInput.get()
+            accessCode = inputAccessCode.get()
+            confirmCode = ConfirmAccessCode.get()
+            
+            # Validating access codes matching
+            if accessCode != confirmCode:
+                self.statusLabel.configure(text="Access codes do not match!", text_color='#a63a50')
+                return
+            
+            try:
+                
+                encryptedData = EncryptionUtils.encrypt_data(data, accessCode) # Encrypting the data here
+                
+                #Getting chosen audio file
+                audioPath = selectedAudioFile.get()
+                imgName = 'smile.png'
+                audio = load(audioPath) #Opens the audio
 
-            #Getting chosen audio file
-            audioPath = selectedAudioFile.get()
-            #Image to cover audio is set
-            imgName = 'smile.png'
-            audio = load(audioPath) #Opens the audio
+                #Opens the image and puts the encrypted data inside saves it
+                img = Image.open(imgName)
+                imgStegano = encode(img, encryptedData)
+                imgStegano.save(imgName)
 
-            #Opens the image and puts the secret text inside saves it
-            img = Image.open(imgName)
-            imgStegano = encode(img, data.encode())
-            imgStegano.save(imgName)
-
-            #Making the image the cover of the audio
-            audio.initTag()
-            audio.tag.images.set(3, open(imgName, "rb").read(), "image/png")
-            audio.tag.save()
-            print("Encoding complete")
+                #Making the image the cover of the audio
+                audio.initTag()
+                audio.tag.images.set(3, open(imgName, "rb").read(), "image/png")
+                audio.tag.save()
+                self.statusLabel.configure(text="Successful!", text_color='#28a745') 
+            except Exception as e:
+                self.statusLabel.configure(text=f"Failed to encrypt and embed data: {str(e)}", text_color='#a63a50')
 
         def submitAction():
             encoder() #Running the encode function when clicked
+
+        def reset_page():
+           
+            selectedAudioFile.set("No File Selected")
+            dataInput.delete(0, 'end')  
+            inputAccessCode.delete(0, 'end')  
+            ConfirmAccessCode.delete(0, 'end')  
+            self.statusLabel.configure(text="")  
 
         #Content--------------------
 
@@ -286,8 +308,8 @@ class EmbedPage(BasePage):
         embedPageContent.grid_columnconfigure((0,1), weight=1)
 
         current_dir = os.path.dirname(os.path.abspath(__file__))
-
         backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
+
 
         self.backArrow = ctk.CTkImage(light_image=Image.open(backArrowPath), size=(40,40))
         self.backArrowButton = ctk.CTkButton(
@@ -295,7 +317,7 @@ class EmbedPage(BasePage):
             image=self.backArrow, 
             text="", 
             fg_color="transparent",
-            command=lambda: self.controller.show_frame(HomePage))
+            command=lambda: [reset_page(), self.controller.show_frame(HomePage)])
         self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
 
         #Cover Media--------------------
@@ -437,6 +459,14 @@ class EmbedPage(BasePage):
                                     font=('Lalezar', 30),
                                     command = submitAction)
         submitButton.grid(row=8,column=2)
+
+        self.statusLabel = ctk.CTkLabel(
+            master=embedPageContent,
+            text="", 
+            text_color='#393839',
+            font=('Lalezar', 16)
+        )
+        self.statusLabel.grid(row=9, column=2, pady=(10,0)) 
         
 class ExtractPage(BasePage):
  
@@ -459,23 +489,37 @@ class ExtractPage(BasePage):
         def deleteAudio():
             selectedAudioFile = set("No File Selected")
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
- 
+
         def decoder():
-            #Audio to be extracted is chosen and loaded
-            audioPath = selectedAudioFile.get()
-            audio = load(audioPath)
- 
-            #Creating an image to save the secret text to, from the cover of the song
-            img = open("tempImg.png","wb")
-            img.write(audio.tag.images[0].image_data)
-            img.close()
- 
-            #The secret text is save in the temp image
-            img = Image.open("tempImg.png")
-            text = decode(img)
-            system("del tempImg.png") #Deleting the temp image
-            print("Data is: "+ str(text)) #Displaying the text
- 
+            try:
+                # Getting the access code
+                accessCode = accessCodeInput.get()
+                
+                #Audio to be extracted is chosen and loaded
+                audioPath = selectedAudioFile.get()
+                audio = load(audioPath)
+
+                #Creating an image to save the encrypted data to, from the cover of the song
+                img = open("tempImg.png", "wb")
+                img.write(audio.tag.images[0].image_data)
+                img.close()
+
+                #The secret text is save in the temp image
+                img = Image.open("tempImg.png")
+                encryptedData = decode(img)
+                system("del tempImg.png")  # Deleting the temp image
+                
+                # Decrypting the data
+                decrypted_data = EncryptionUtils.decrypt_data(encryptedData, accessCode)
+                
+                # Showing the decrypted data to user
+                resultText.delete(1.0, tk.END)  # Clear previous content
+                resultText.insert(tk.END, decrypted_data)
+                self.statusLabel.configure(text="Data extracted and decrypted successfully!", text_color='#28a745')
+                
+            except Exception as e:
+                self.statusLabel.configure(text=f"Failed to extract and decrypt data: {str(e)}", text_color='#a63a50')
+
  
         def extractAction():
             decoder() #Running the decoder function when clicked
@@ -484,6 +528,12 @@ class ExtractPage(BasePage):
         extractPageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
         extractPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         extractPageContent.grid_columnconfigure((0, 1), weight=1)
+
+        def reset_page(): # Resets the input fields and labels
+            selectedAudioFile.set("No File Selected")
+            accessCodeInput.delete(0, 'end') 
+            resultText.delete(1.0, tk.END)  
+            self.statusLabel.configure(text="") 
  
         # Back arrow that returns user to home
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -495,7 +545,7 @@ class ExtractPage(BasePage):
             image=self.backArrow,
             text="",
             fg_color="transparent",
-            command=lambda: self.controller.show_frame(HomePage))
+            command=lambda: [reset_page(), self.controller.show_frame(HomePage)])
         self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
  
  
@@ -517,6 +567,41 @@ class ExtractPage(BasePage):
                                     fg_color= '#FFFFFF',
                                     corner_radius = 10)
         audioFileLabel.grid(row=4, column=1, padx=(0,260), pady=(50,0))
+
+                # Access Code input
+        accessCodeLabel = ctk.CTkLabel(master=extractPageContent, 
+                                    text='Access Code', 
+                                    text_color='#393839', 
+                                    font=('lalezar', 20))
+        accessCodeLabel.grid(row=5, column=1, padx=(0,260), pady=(20,0))
+
+        accessCodeFrame = ctk.CTkFrame(
+            extractPageContent,
+            fg_color="#393839",
+            corner_radius=100,
+        )
+        accessCodeFrame.grid(row=6, column=1, padx=(0,260))
+
+        accessCodeInput = ctk.CTkEntry(
+            master=accessCodeFrame, 
+            placeholder_text='Enter access code...', 
+            placeholder_text_color='#393839',
+            fg_color="white",
+            corner_radius=100,
+            width=180,
+            height=28,
+            show="*"  # This will hide the password
+        )
+        accessCodeInput.grid(row=0, column=0, padx=5, pady=5)
+
+        # Result text area
+        resultText = ctk.CTkTextbox(
+            master=extractPageContent,
+            width=300,
+            height=100,
+            corner_radius=10
+        )
+        resultText.grid(row=8, column=1, padx=(0,260), pady=(20,0))
  
         #Extract button--------------------
         extractButton = ctk.CTkButton(master=extractPageContent,
@@ -527,6 +612,14 @@ class ExtractPage(BasePage):
                                     font=('Lalezar', 30),
                                     command = extractAction)
         extractButton.grid(row=7,column=1, padx=(0,260), pady=(90,0))
+
+        self.statusLabel = ctk.CTkLabel(
+            master=extractPageContent,
+            text="",  # Empty by default
+            text_color='#393839',
+            font=('Lalezar', 16)
+        )
+        self.statusLabel.grid(row=9, column=1, padx=(0,260), pady=(10,0))
         #Delete button for chosen audio file display
        # deleteButton = ctk.CTkButton(master=extractPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
        # deleteButton.grid(row=3, column=2)
