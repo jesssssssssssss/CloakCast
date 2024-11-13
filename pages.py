@@ -240,6 +240,7 @@ class EmbedPage(BasePage):
         #Variable holding selected audio file
         selectedAudioFile = ctk.StringVar(value="No File Selected")
  
+ # ADDING COMMENT HERE TO MARK NEXT SECTION
         #Function to browse and open audio file
         def openAudioFile():
           filePath = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
@@ -247,6 +248,7 @@ class EmbedPage(BasePage):
            #Chosen audio display
             selectedAudioFile.set(filePath) #updates the string
             print(f"Selected file: {filePath}")
+            print(f"Selected file: {filePath}") # * style the area calling this function where selectedaudiofile is displayed !
  
         #Function to delete selected audio file
         def deleteAudio():
