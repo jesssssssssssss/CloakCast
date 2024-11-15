@@ -286,14 +286,21 @@ class EmbedPage(BasePage):
                 audio.initTag()
                 audio.tag.images.set(3, open(imgName, "rb").read(), "image/png")
                 audio.tag.save()
-                #self.statusLabel.configure(text="Successful!", text_color='#28a745')
                 return True # Returns true if successful 
             except Exception as e:
                 self.statusLabel.configure(text=f"Failed to encrypt and embed data: {str(e)}", text_color='#a63a50')
                 return False #Returns false id there is an error
 
         def submitAction():
-            if encoder(): #CHecks if encoder was successful and then open success page
+            #Error messages for when required data has not been entered
+            if selectedAudioFile.get() == "No File Selected":
+                self.statusLabel.configure(text="Please select a Cover Media", text_color='#A63A50')
+                return
+            if not dataInput.get():
+                self.statusLabel.configure(text="Please enter Hidden Text", text_color='#A63A50')
+                return
+            #Checks if encoder was successful and then opens success page
+            if encoder(): 
                 self.controller.show_frame(EmbedSuccessPage)
 
         def reset_page():
