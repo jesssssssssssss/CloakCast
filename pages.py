@@ -240,17 +240,23 @@ class EmbedPage(BasePage):
 
         #Functions--------------------
 
-        #Variable holding selected audio file
+        #Variable holding selected audio file and text file
         selectedAudioFile = ctk.StringVar(value="No File Selected")
+        selectedTextFile = ctk.StringVar(value="No File Selected")
 
         #Function to browse and open audio file
         def openAudioFile():
           filePath = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
           if filePath:
            #Chosen audio display
-            selectedAudioFile.set(filePath) #updates the string
+            selectedAudioFile.set(filePath) #updates the selected audio file
             print(f"Selected file: {filePath}")
-            print(f"Selected file: {filePath}") # 
+        
+        def openTextFile():
+            filePath = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
+            if filePath:
+                selectedTextFile.set(filePath) #updates the selected text file
+                print(f"Selected text file: {filePath}")
  
         #Function to delete selected audio file
         def deleteAudio():
@@ -258,47 +264,71 @@ class EmbedPage(BasePage):
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
 
         def encoder():
-            #Getting hidden data and access code
-            data = dataInput.get()
+            #Setting data for exception handling
+            data = "No File Selected"
+
+            #Getting hidden data, file path and access code
+            data = dataInput.get().strip()
+            textFilePath = selectedTextFile.get()
             accessCode = inputAccessCode.get()
             confirmCode = ConfirmAccessCode.get()
             
-            # Validating access codes matching
+            
+            #Validating access codes matching
             if accessCode != confirmCode:
                 self.statusLabel.configure(text="Access codes do not match!", text_color='#a63a50')
                 return False #Returning false if codes don't match
             
-            try:
-                
-                encryptedData = EncryptionUtils.encrypt_data(data, accessCode) # Encrypting the data here
+            #Checking if both data has been inptuted and a file has been selected
+            if data and textFilePath != "No File Selected":
+                self.statusLabel.configure(text=f"You can not embed a message and a file. Please choose one", text_color='#a63a50')
+                return False
+            
+            #Checking if neither input data  or a file has been selected
+            if not data and textFilePath == "No File Selected":
+                self.statusLabel.configure(text=f"Please enter a Message or Upload a File", text_color='#a63a50')
+                return False
+            
+            #Checking if a file has been selected and it exists
+            if not data:
+                try:
+                    #Reading data from the selected text file
+                    with open(textFilePath, "r") as file: #the 'with' ensures the file closes when finished reading
+                            data = file.read()
+                except Exception as e:
+                        self.statusLabel.configure(text="Failed to read file: {str(e)}", text_color='#a63a50')
+                        return False
+            try:         
+
+                # Encrypting the data here
+                encryptedData = EncryptionUtils.encrypt_data(data, accessCode) 
                 
                 #Getting chosen audio file
                 audioPath = selectedAudioFile.get()
+                #Error message for when required data has not been entered
+                if audioPath == "No File Selected":
+                    self.statusLabel.configure(text="Please select a Cover Media", text_color='#A63A50')
+                    return False
+
                 imgName = 'smile.png'
                 audio = load(audioPath) #Opens the audio
 
                 #Opens the image and puts the encrypted data inside saves it
                 img = Image.open(imgName)
-                imgStegano = encode(img, encryptedData)
+                imgStegano = encode(img, encryptedData) 
                 imgStegano.save(imgName)
 
                 #Making the image the cover of the audio
                 audio.initTag()
                 audio.tag.images.set(3, open(imgName, "rb").read(), "image/png")
                 audio.tag.save()
+
                 return True # Returns true if successful 
             except Exception as e:
                 self.statusLabel.configure(text=f"Failed to encrypt and embed data: {str(e)}", text_color='#a63a50')
-                return False #Returns false id there is an error
+                return False #Returns false if there is an error
 
         def submitAction():
-            #Error messages for when required data has not been entered
-            if selectedAudioFile.get() == "No File Selected":
-                self.statusLabel.configure(text="Please select a Cover Media", text_color='#A63A50')
-                return
-            if not dataInput.get():
-                self.statusLabel.configure(text="Please enter Hidden Text", text_color='#A63A50')
-                return
             #Checks if encoder was successful and then opens success page
             if encoder(): 
                 self.controller.show_frame(EmbedSuccessPage)
@@ -446,12 +476,13 @@ class EmbedPage(BasePage):
                                     border_color='#393839',
                                     corner_radius = 10,
                                     fg_color= '#FFFFFF',
-                                    font=('Lalezar', 30)) 
+                                    font=('Lalezar', 30),
+                                    command=openTextFile) 
         fileUploadButton.grid(row=5, column=3, pady=20, padx=(0,50))
         
         #Chosen text file display placeholder
         fileUploadLabel = ctk.CTkLabel(master=embedPageContent,
-                                    text='fiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiile',
+                                    textvariable=selectedTextFile,
                                     fg_color= 'red',
                                     corner_radius = 10) #File display placeholder
         fileUploadLabel.grid(row=6, column=3)
