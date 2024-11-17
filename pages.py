@@ -255,6 +255,8 @@ class EmbedPage(BasePage):
             self.ConfirmAccessCode.delete(0, 'end')
         if hasattr(self, 'statusLabel'):
             self.statusLabel.configure(text="")
+        if hasattr(self, 'selectedTextFile'):
+            self.selectedTextFile.set("No File Selected")
 
     def create_content(self):
 
