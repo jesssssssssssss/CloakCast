@@ -40,6 +40,9 @@ class MainApp(ctk.CTk):
         frame.tkraise()
         frame.sidebar.collapse_menu()
 
+        if hasattr(frame, 'onShowFrame'):
+            frame.onShowFrame()
+
 def loadLalezarFont():
     try:
         current_dir = os.path.dirname(os.path.abspath(__file__))
