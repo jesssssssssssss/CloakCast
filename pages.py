@@ -416,28 +416,27 @@ class EmbedPage(BasePage):
         #Access Code--------------------
         
         #Header
+       
         accessCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Access Code', text_color='#a63a50', font=('lalezar', 40))
-        accessCodeLabel.grid(row=4, column=0, padx=(40,0))
-        
+        accessCodeLabel.grid(row=4, column=0, padx=(40,0), pady=(20,5))  # Reduced bottom padding
+
         enterCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Enter Code', text_color='#393839', font=('lalezar', 20))
-        enterCodeLabel.grid(row=5, column=0, padx=(40,0))
-        
+        enterCodeLabel.grid(row=5, column=0, padx=(40,0), pady=(0,5))  
+
+    
         inputAccessCodeFrame = ctk.CTkFrame(
             embedPageContent,
             fg_color="#393839",
             corner_radius=100,
-            
         )
-        inputAccessCodeFrame.grid(row=6, column=0, padx=(40,0))
-
-        #Input field
+        inputAccessCodeFrame.grid(row=6, column=0, padx=(40,0), pady=(0,10))  
 
         inputAccessCode = ctk.CTkEntry(master=inputAccessCodeFrame, placeholder_text='...', placeholder_text_color='#393839', fg_color="white", corner_radius=100, width=180, height=28)
         inputAccessCode.grid(row=6, column=0, padx=5, pady=5)
         
         #View access code button
-        viewAccessCode = ctk.CTkButton(master=embedPageContent, text='o', width=3) #eye icon button placeholder
-        viewAccessCode.grid(row=6, column=1)
+        viewAccessCode = ctk.CTkButton(master=inputAccessCode, text='o', width=3, height=3, fg_color='#FFFFFF', text_color='#393839', hover_color='#FFFFFF') #Add command to this
+        viewAccessCode.grid(row=0, column=0, sticky='e', padx=(0,10))
         
         confirmCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Confirm Code', width=50, text_color='#393839', font=('lalezar', 20))
         confirmCodeLabel.grid(row=7, column=0, padx=(40,0))
@@ -453,11 +452,11 @@ class EmbedPage(BasePage):
         ConfirmAccessCodeFrame.grid(row=8, column=0, padx=(40,0))
 
         ConfirmAccessCode = ctk.CTkEntry(master=ConfirmAccessCodeFrame, placeholder_text='...', placeholder_text_color='#393839', fg_color="white", corner_radius=100, width=180, height=28)
-        ConfirmAccessCode.grid(row=6, column=0, padx=5, pady=5)
+        ConfirmAccessCode.grid(row=0, column=0, padx=5, pady=5)
         
         #View confirmed access code button
-        viewConfirmedAccessCode = ctk.CTkButton(master=embedPageContent, text='-', width=3) #eye icon button placeholder
-        viewConfirmedAccessCode.grid(row=8, column=1)
+        viewConfirmedAccessCode = ctk.CTkButton(master=ConfirmAccessCode, text='o', width=3, height=3, fg_color='#FFFFFF', text_color='#393839', hover_color='#FFFFFF') #Add command to this
+        viewConfirmedAccessCode.grid(row=0, column=0, sticky='e', padx=(0,10))
         
         
         #Hidden Data--------------------
@@ -485,35 +484,58 @@ class EmbedPage(BasePage):
         #Text file upload button
         fileUploadButton = ctk.CTkButton(master=embedPageContent,
                                     text='Upload File',
-                                    text_color='#a63a50',
-                                    border_width= 3,
+                                    text_color='white',
                                     border_color='#393839',
-                                    corner_radius = 10,
-                                    fg_color= '#FFFFFF',
-                                    font=('Lalezar', 30),
-                                    command=openTextFile) 
-        fileUploadButton.grid(row=5, column=3, pady=20, padx=(0,50))
-        
+                                    corner_radius = 100,
+                                    fg_color= '#393839',
+                                    font=('Lalezar', 22),
+                                    command=openTextFile, 
+                                    height=40)
+        fileUploadButton.grid(row=5, column=3, pady=(0,0), padx=(0,50))  
+
         #Chosen text file display placeholder
-        fileUploadLabel = ctk.CTkLabel(master=embedPageContent,
+
+        fileUploadLabelFrame = ctk.CTkLabel(
+                    embedPageContent,
+                    fg_color="#393839",
+                    corner_radius=100,
+                    width=230,
+                    height=25
+                )
+        fileUploadLabelFrame.grid(row=6, column=3, padx=(0,40), pady=(10, 0))
+
+        fileUploadLabel = ctk.CTkLabel(master=fileUploadLabelFrame,
                                     textvariable=self.selectedTextFile,
-                                    fg_color= 'red',
-                                    corner_radius = 10) #File display placeholder
-        fileUploadLabel.grid(row=6, column=3)
-        
+                                    corner_radius = 100,
+                                    height=25,
+                                    width=230,
+                                    fg_color= '#FFFFFF',
+                                    text_color="#393839")
+        fileUploadLabel.grid(row=0, column=0, padx=10, pady=6)
+
+        noteEncryption = ctk.CTkLabel(
+            embedPageContent,
+            font=("Lalezar", 17),
+            text_color='#a63a50',
+            text = "Data will be encrpyted automatically."
+        )
+        noteEncryption.grid(row=8, column=3,padx=(0,40))
+
+
         #Delete button for chosen Text file display
-        deleteButton = ctk.CTkButton(master=embedPageContent, text='x', width=3) #Trash icon button placeholder
-        deleteButton.grid(row=6, column=4)
+        deleteButton = ctk.CTkButton(master=fileUploadLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteAudio, font=("Sniglet", 22)) 
+        deleteButton.grid(row=0, column=0, sticky='e', padx=(0,20), pady=(0,3))
 
         #Submit button--------------------
         submitButton = ctk.CTkButton(master=embedPageContent,
-                                    text='Submit',
+                                    text='Embed Audio',
                                     text_color='#FFFFFF',
-                                    corner_radius = 10,
+                                    corner_radius = 100,
                                     fg_color= '#a63a50',
-                                    font=('Lalezar', 30),
+                                    font=('Lalezar', 22),
+                                    height=50,
                                     command = submitAction)
-        submitButton.grid(row=8,column=2)
+        submitButton.grid(row=9, padx=(302,0), pady=(30,0))
 
         self.statusLabel = ctk.CTkLabel(
             master=embedPageContent,
@@ -521,7 +543,7 @@ class EmbedPage(BasePage):
             text_color='#393839',
             font=('Lalezar', 16)
         )
-        self.statusLabel.grid(row=9, column=2, pady=(10,0)) 
+        self.statusLabel.grid(row=10, column=2, pady=(10,0)) 
 
 class EmbedSuccessPage(BasePage):
  
