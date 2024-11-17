@@ -295,7 +295,6 @@ class EmbedPage(BasePage):
             accessCode = inputAccessCode.get()
             confirmCode = ConfirmAccessCode.get()
             
-            
             #Validating access codes matching
             if accessCode != confirmCode:
                 self.statusLabel.configure(text="Access codes do not match!", text_color='#a63a50')
@@ -306,17 +305,18 @@ class EmbedPage(BasePage):
                 self.statusLabel.configure(text=f"You can not embed a message and a file. Please choose one", text_color='#a63a50')
                 return False
             
-            #Checking if neither input data  or a file has been selected
+            #Checking if neither input data or a file has been selected
             if not data and textFilePath == "No File Selected":
                 self.statusLabel.configure(text=f"Please enter a Message or Upload a File", text_color='#a63a50')
                 return False
             
             #Checking if a file has been selected and it exists
-            if not data:
+            if not data: # and self.selectedAudioFile - add this later
                 try:
                     #Reading data from the selected text file
                     with open(textFilePath, "r") as file: #the 'with' ensures the file closes when finished reading
                             data = file.read()
+
                 except Exception as e:
                         self.statusLabel.configure(text="Failed to read file: {str(e)}", text_color='#a63a50')
                         return False
@@ -364,15 +364,15 @@ class EmbedPage(BasePage):
         current_dir = os.path.dirname(os.path.abspath(__file__))
         backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
 
-
         self.backArrow = ctk.CTkImage(light_image=Image.open(backArrowPath), size=(40,40))
         self.backArrowButton = ctk.CTkButton(
             embedPageContent, 
             image=self.backArrow, 
             text="", 
             fg_color="transparent",
+            width=50,
             command=lambda: self.controller.show_frame(HomePage))
-        self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
+        self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0, sticky='w')
 
         #Cover Media--------------------
  
@@ -410,8 +410,8 @@ class EmbedPage(BasePage):
         audioFileLabel.grid(row=0, column=0, padx=10, pady=6)
 
         #Delete button for chosen audio file display
-        deleteButton = ctk.CTkButton(master=embedPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
-        deleteButton.grid(row=3, column=1)
+        deleteButton = ctk.CTkButton(master=audioFileLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteAudio, font=("Sniglet", 22)) #Trash icon button placeholder
+        deleteButton.grid(row=0, column=0, sticky='e', padx=(0,20), pady=(0,3))
         
         #Access Code--------------------
         
@@ -935,8 +935,6 @@ class HelpContactPage(BasePage):
         
         headLabel = ctk.CTkLabel(master=helpContactPageContent, text='Help / Contact Us', font=('Lalezar', 50))
         headLabel.grid(row=1, column=1, sticky="w")
-
-
 
 
 
