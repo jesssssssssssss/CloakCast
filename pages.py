@@ -164,6 +164,9 @@ class BasePage(ctk.CTkFrame):
         
         self.sidebar = Sidebar(self, controller)
         self.sidebar.place(x=0, y=0, relheight=1.0)
+
+        def onShowFrame(self):
+            pass
         
   
     
@@ -236,31 +239,48 @@ class HomePage(BasePage):
 
 class EmbedPage(BasePage):
 
+    def onShowFrame(self):
+        # This method will be called whenever the page is shown
+        self.resetPage()
+        
+    def resetPage(self):
+
+        if hasattr(self, 'selectedAudioFile'):  # Checking first if attributes exist
+            self.selectedAudioFile.set("No File Selected") # Resetting the attributes
+        if hasattr(self, 'dataInput'):
+            self.dataInput.delete(0, 'end')
+        if hasattr(self, 'inputAccessCode'):
+            self.inputAccessCode.delete(0, 'end')
+        if hasattr(self, 'ConfirmAccessCode'):
+            self.ConfirmAccessCode.delete(0, 'end')
+        if hasattr(self, 'statusLabel'):
+            self.statusLabel.configure(text="")
+
     def create_content(self):
 
         #Functions--------------------
 
         #Variable holding selected audio file and text file
-        selectedAudioFile = ctk.StringVar(value="No File Selected")
-        selectedTextFile = ctk.StringVar(value="No File Selected")
+        self.selectedAudioFile = ctk.StringVar(value="No File Selected")
+        self.selectedTextFile = ctk.StringVar(value="No File Selected")
 
         #Function to browse and open audio file
         def openAudioFile():
           filePath = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
           if filePath:
            #Chosen audio display
-            selectedAudioFile.set(filePath) #updates the selected audio file
+            self.selectedAudioFile.set(filePath) #updates the selected audio file
             print(f"Selected file: {filePath}")
         
         def openTextFile():
             filePath = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
             if filePath:
-                selectedTextFile.set(filePath) #updates the selected text file
+                self.selectedTextFile.set(filePath) #updates the selected text file
                 print(f"Selected text file: {filePath}")
  
         #Function to delete selected audio file
         def deleteAudio():
-            selectedAudioFile.set("No File Selected")
+            self.selectedAudioFile.set("No File Selected")
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
 
         def encoder():
@@ -269,7 +289,7 @@ class EmbedPage(BasePage):
 
             #Getting hidden data, file path and access code
             data = dataInput.get().strip()
-            textFilePath = selectedTextFile.get()
+            textFilePath = self.selectedTextFile.get()
             accessCode = inputAccessCode.get()
             confirmCode = ConfirmAccessCode.get()
             
@@ -304,7 +324,7 @@ class EmbedPage(BasePage):
                 encryptedData = EncryptionUtils.encrypt_data(data, accessCode) 
                 
                 #Getting chosen audio file
-                audioPath = selectedAudioFile.get()
+                audioPath = self.selectedAudioFile.get()
                 #Error message for when required data has not been entered
                 if audioPath == "No File Selected":
                     self.statusLabel.configure(text="Please select a Cover Media", text_color='#A63A50')
@@ -331,15 +351,7 @@ class EmbedPage(BasePage):
         def submitAction():
             #Checks if encoder was successful and then opens success page
             if encoder(): 
-                self.controller.show_frame(EmbedSuccessPage)
-
-        def reset_page():
-           
-            selectedAudioFile.set("No File Selected")
-            dataInput.delete(0, 'end')  
-            inputAccessCode.delete(0, 'end')  
-            ConfirmAccessCode.delete(0, 'end')  
-            self.statusLabel.configure(text="")  
+                self.controller.show_frame(EmbedSuccessPage) 
 
         #Content--------------------
 
@@ -357,7 +369,7 @@ class EmbedPage(BasePage):
             image=self.backArrow, 
             text="", 
             fg_color="transparent",
-            command=lambda: [reset_page(), self.controller.show_frame(HomePage)])
+            command=lambda: self.controller.show_frame(HomePage))
         self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
 
         #Cover Media--------------------
@@ -387,7 +399,7 @@ class EmbedPage(BasePage):
 
         #Chosen audio display, uses selectedAudioFile
         audioFileLabel = ctk.CTkLabel(master=audioFileLabelFrame,
-                                    textvariable= selectedAudioFile,
+                                    textvariable= self.selectedAudioFile,
                                     corner_radius = 100,
                                     height=35,
                                     width=260,
@@ -482,7 +494,7 @@ class EmbedPage(BasePage):
         
         #Chosen text file display placeholder
         fileUploadLabel = ctk.CTkLabel(master=embedPageContent,
-                                    textvariable=selectedTextFile,
+                                    textvariable=self.selectedTextFile,
                                     fg_color= 'red',
                                     corner_radius = 10) #File display placeholder
         fileUploadLabel.grid(row=6, column=3)
@@ -550,19 +562,35 @@ class EmbedSuccessPage(BasePage):
         
 class ExtractPage(BasePage):
  
+
+    def onShowFrame(self):
+           
+           self.resetPage()
+        
+    def resetPage(self):
+      
+        if hasattr(self, 'selectedAudioFile'):
+            self.selectedAudioFile.set("No File Selected")
+        if hasattr(self, 'accessCodeInput'):
+            self.accessCodeInput.delete(0, 'end')
+        if hasattr(self, 'resultText'):
+            self.resultText.delete(1.0, tk.END)
+        if hasattr(self, 'statusLabel'):
+            self.statusLabel.configure(text="")
+
     def create_content(self):
  
         #Functions--------------------
  
         #Variable holding selected audio file
-        selectedAudioFile = ctk.StringVar(value="No File Selected")
+        self.selectedAudioFile = ctk.StringVar(value="No File Selected")
  
         #Function to browse and open audio file
         def openAudioFile():
           filePath = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
           if filePath:
            #Chosen audio display
-            selectedAudioFile.set(filePath) #updates the string
+            self.selectedAudioFile.set(filePath) #updates the string
             print(f"Selected file: {filePath}")
  
         #Function to delete selected audio file
@@ -576,7 +604,7 @@ class ExtractPage(BasePage):
                 accessCode = accessCodeInput.get()
                 
                 #Audio to be extracted is chosen and loaded
-                audioPath = selectedAudioFile.get()
+                audioPath = self.selectedAudioFile.get()
                 audio = load(audioPath)
 
                 #Creating an image to save the encrypted data to, from the cover of the song
@@ -609,12 +637,6 @@ class ExtractPage(BasePage):
         extractPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
         extractPageContent.grid_columnconfigure((0, 1), weight=1)
 
-        def reset_page(): # Resets the input fields and labels
-            selectedAudioFile.set("No File Selected")
-            accessCodeInput.delete(0, 'end') 
-            resultText.delete(1.0, tk.END)  
-            self.statusLabel.configure(text="") 
- 
         # Back arrow that returns user to home
         current_dir = os.path.dirname(os.path.abspath(__file__))
         backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
@@ -625,7 +647,7 @@ class ExtractPage(BasePage):
             image=self.backArrow,
             text="",
             fg_color="transparent",
-            command=lambda: [reset_page(), self.controller.show_frame(HomePage)])
+            command=lambda: self.controller.show_frame(HomePage))
         self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
  
  
@@ -643,7 +665,7 @@ class ExtractPage(BasePage):
  
         #Chosen audio display
         audioFileLabel = ctk.CTkLabel(master=extractPageContent,
-                                    textvariable= selectedAudioFile,
+                                    textvariable= self.selectedAudioFile,
                                     fg_color= '#FFFFFF',
                                     corner_radius = 10)
         audioFileLabel.grid(row=4, column=1, padx=(0,260), pady=(50,0))
@@ -700,9 +722,6 @@ class ExtractPage(BasePage):
             font=('Lalezar', 16)
         )
         self.statusLabel.grid(row=9, column=1, padx=(0,260), pady=(10,0))
-        #Delete button for chosen audio file display
-       # deleteButton = ctk.CTkButton(master=extractPageContent, text='x', width=3, command= deleteAudio) #Trash icon button placeholder
-       # deleteButton.grid(row=3, column=2)
 
 class HowToUsePage(BasePage):
 
