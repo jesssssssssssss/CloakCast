@@ -390,14 +390,13 @@ class EmbedPage(BasePage):
         #Audio upload button
         audioUploadButton = ctk.CTkButton(master=embedPageContent,
                                     text='Upload Audio',
-                                    text_color='#393839',
-                                    border_width= 7,
+                                    text_color='#ffffff',
                                     border_color='#393839',
                                     corner_radius = 100,
-                                    fg_color= '#FFFFFF',
+                                    fg_color= '#393839',
                                     font=('Lalezar', 24),
                                     command=openAudioFile,
-                                    height=50) 
+                                    height=40) 
         audioUploadButton.grid(row=2, column=0, pady=(10, 0), padx=(40,0))
         
         audioFileLabelFrame = ctk.CTkFrame(
