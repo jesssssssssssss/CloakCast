@@ -289,6 +289,12 @@ class EmbedPage(BasePage):
             self.selectedAudioFile.set("No File Selected")
             if hasattr(self, 'fullAudioPath'):
                 delattr(self, 'fullAudioPath')
+        
+        #Function to delete selected text file
+        def deleteText():
+            self.selectedTextFile.set("No File Selected")
+            if hasattr(self, 'fullTextPath'):
+                delattr(self, 'fullTextPath')
 
         def encoder():
             #Setting data for exception handling
@@ -530,7 +536,7 @@ class EmbedPage(BasePage):
 
 
         #Delete button for chosen Text file display
-        deleteButton = ctk.CTkButton(master=fileUploadLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteAudio, font=("Sniglet", 22)) 
+        deleteButton = ctk.CTkButton(master=fileUploadLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteText, font=("Sniglet", 22)) 
         deleteButton.grid(row=0, column=0, sticky='e', padx=(0,20), pady=(0,3))
 
         #Submit button--------------------
@@ -625,10 +631,18 @@ class ExtractPage(BasePage):
             self.fullAudioPath = filePath 
             print(f"Selected file: {filePath}")
  
+ 
         #Function to delete selected audio file
         def deleteAudio():
+<<<<<<< HEAD
             self.selectedAudioFile = set("No File Selected")
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
+=======
+            self.selectedAudioFile.set("No File Selected")
+            if hasattr(self, 'fullAudioPath'):
+                delattr(self, 'fullAudioPath')
+        
+>>>>>>> 496ea421b48eab4932392bef5027fdb9f70306f4
 
         def decoder():
             try:
@@ -713,7 +727,7 @@ class ExtractPage(BasePage):
         audioFileLabel.grid(row=0, column=0, padx=10, pady=6)
 
         #Delete button for chosen audio file display
-        deleteButton = ctk.CTkButton(master=audioFileLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteAudio, font=("Sniglet", 22)) #Trash icon button placeholder
+        deleteButton = ctk.CTkButton(master=audioFileLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteAudio, font=("Sniglet", 22)) 
         deleteButton.grid(row=0, column=0, sticky='e', padx=(0,20), pady=(0,3))
 
         # Access Code input
@@ -739,15 +753,6 @@ class ExtractPage(BasePage):
             show="*"  # This will hide the password
         )
         accessCodeInput.grid(row=0, column=0, padx=5, pady=5)
-
-        # Result text area
-        resultText = ctk.CTkTextbox(
-            master=extractPageContent,
-            width=300,
-            height=100,
-            corner_radius=10
-        )
-        resultText.grid(row=8, column=1, padx=(0,260), pady=(20,0))
  
         #Extract button--------------------
         extractButton = ctk.CTkButton(master=extractPageContent,
