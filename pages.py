@@ -592,7 +592,6 @@ class EmbedSuccessPage(BasePage):
         #audioFileLabel.grid(row=1, column=0, columnspan=2, padx=20, pady=(10, 20), sticky="ew")
         
 class ExtractPage(BasePage):
- 
 
     def onShowFrame(self):
            
@@ -621,7 +620,9 @@ class ExtractPage(BasePage):
           filePath = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
           if filePath:
            #Chosen audio display
-            self.selectedAudioFile.set(filePath) #updates the string
+            fileName = os.path.basename(filePath)
+            self.selectedAudioFile.set(fileName)  
+            self.fullAudioPath = filePath 
             print(f"Selected file: {filePath}")
  
         #Function to delete selected audio file
@@ -635,7 +636,7 @@ class ExtractPage(BasePage):
                 accessCode = accessCodeInput.get()
                 
                 #Audio to be extracted is chosen and loaded
-                audioPath = self.selectedAudioFile.get()
+                audioPath = getattr(self, 'fullAudioPath', None)
                 audio = load(audioPath)
 
                 #Creating an image to save the encrypted data to, from the cover of the song
@@ -651,13 +652,13 @@ class ExtractPage(BasePage):
                 # Decrypting the data
                 decrypted_data = EncryptionUtils.decrypt_data(encryptedData, accessCode)
                 
-                # Showing the decrypted data to user
-                resultText.delete(1.0, tk.END)  # Clear previous content
-                resultText.insert(tk.END, decrypted_data)
-                self.statusLabel.configure(text="Data extracted and decrypted successfully!", text_color='#28a745')
+                # Sending the decrypted data to success page
+                success_page = self.controller.frames[ExtractSuccessPage]
+                success_page.setData(decrypted_data, self.selectedAudioFile.get())
+                self.controller.show_frame(ExtractSuccessPage)
                 
             except Exception as e:
-                self.statusLabel.configure(text=f"Failed to extract and decrypt data: {str(e)}", text_color='#a63a50')
+                messagebox.showerror("Error", f"Failed to extract and decrypt data: {str(e)}")
 
  
         def extractAction():
@@ -685,27 +686,43 @@ class ExtractPage(BasePage):
         #Audio upload button
         audioUploadButton = ctk.CTkButton(
             extractPageContent,
-            text="Upload File",
+            text='Upload Audio',
+            text_color='#393839',
+            border_width= 7,
+            border_color='#393839',
+            corner_radius = 100,
+            fg_color= '#FFFFFF',
+            font=('Lalezar', 24),
             command=openAudioFile,
-            text_color='White',
-            fg_color='#393839',
-            corner_radius=100,
-            font=('Lalezar', 30))
+            height=50) 
         audioUploadButton.grid(row=3, column=1, padx=(0,260), pady=(100,20))
  
- 
-        #Chosen audio display
-        audioFileLabel = ctk.CTkLabel(master=extractPageContent,
-                                    textvariable= self.selectedAudioFile,
-                                    fg_color= '#FFFFFF',
-                                    corner_radius = 10)
-        audioFileLabel.grid(row=4, column=1, padx=(0,260), pady=(50,0))
+        audioFileLabelFrame = ctk.CTkFrame(
+            extractPageContent,
+            fg_color="#393839",
+            corner_radius=100,
+        )
+        audioFileLabelFrame.grid(row=4, column=1, padx=(0,260), pady=(10,0))
 
-                # Access Code input
+        #Chosen audio display
+        audioFileLabel = ctk.CTkLabel(master=audioFileLabelFrame,
+                                    textvariable= self.selectedAudioFile,
+                                    corner_radius = 100,
+                                    height=35,
+                                    width=260,
+                                    fg_color= '#FFFFFF',
+                                    text_color="#393839")
+        audioFileLabel.grid(row=0, column=0, padx=10, pady=6)
+
+        #Delete button for chosen audio file display
+        deleteButton = ctk.CTkButton(master=audioFileLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteAudio, font=("Sniglet", 22)) #Trash icon button placeholder
+        deleteButton.grid(row=0, column=0, sticky='e', padx=(0,20), pady=(0,3))
+
+        # Access Code input
         accessCodeLabel = ctk.CTkLabel(master=extractPageContent, 
-                                    text='Access Code', 
+                                    text='Enter Access Code', 
                                     text_color='#393839', 
-                                    font=('lalezar', 20))
+                                    font=('Sniglet', 20))
         accessCodeLabel.grid(row=5, column=1, padx=(0,260), pady=(20,0))
 
         accessCodeFrame = ctk.CTkFrame(
@@ -717,8 +734,6 @@ class ExtractPage(BasePage):
 
         accessCodeInput = ctk.CTkEntry(
             master=accessCodeFrame, 
-            placeholder_text='Enter access code...', 
-            placeholder_text_color='#393839',
             fg_color="white",
             corner_radius=100,
             width=180,
@@ -753,6 +768,108 @@ class ExtractPage(BasePage):
             font=('Lalezar', 16)
         )
         self.statusLabel.grid(row=9, column=1, padx=(0,260), pady=(10,0))
+
+class ExtractSuccessPage(BasePage):
+    def __init__(self, parent, controller):
+        self.fileName = ""
+        self.extractedData = ""
+        super().__init__(parent, controller)
+        
+    def setData(self, data, fileName):
+        self.extractedData = data
+        self.fileName = fileName
+        self.updateDisplay()
+        
+    def updateDisplay(self):
+        if hasattr(self, 'dataDisplay'):
+            self.dataDisplay.delete(1.0, tk.END)
+            self.dataDisplay.insert(tk.END, self.extractedData)
+        if hasattr(self, 'fileName_label'):
+            self.fileName_label.configure(text=self.fileName)
+            
+    def create_content(self):
+        success_frame = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
+        success_frame.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
+        success_frame.grid_columnconfigure((0, 1), weight=1)
+        
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
+        
+        self.backArrow = ctk.CTkImage(light_image=Image.open(backArrowPath), size=(40,40))
+        self.backArrowButton = ctk.CTkButton(
+            success_frame,
+            image=self.backArrow,
+            text="",
+            fg_color="transparent",
+            command=lambda: self.controller.show_frame(HomePage))
+        self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
+        
+        # File name display
+        self.fileLabel = ctk.CTkLabel(
+            success_frame,
+            text="File Uploaded:",
+            font=('Sniglet', 20),
+            text_color='#393839'
+        )
+        self.fileLabel.grid(row=1, column=1, padx=(0,260), pady=(20,10))
+        
+        # File name frame
+        fileFrame = ctk.CTkFrame(
+            success_frame,
+            fg_color="#393839",
+            corner_radius=100,
+        )
+        fileFrame.grid(row=2, column=1, padx=(0,260))
+        
+        self.fileName_label = ctk.CTkLabel(
+            fileFrame,
+            text=self.fileName,  # fileName is initialized here
+            font=('Lalezar', 16),
+            fg_color='white',
+            corner_radius=100,
+            width=260,
+            height=35
+        )
+        self.fileName_label.grid(row=0, column=0, padx=10, pady=6)
+        
+        # Data label
+        dataLabel = ctk.CTkLabel(
+            success_frame,
+            text="Data:",
+            font=('Sniglet', 20),
+            text_color='#393839'
+        )
+        dataLabel.grid(row=3, column=1, padx=(0,260), pady=(20,10))
+
+        dataFrame = ctk.CTkFrame(
+            success_frame,
+            fg_color="#393839",
+            corner_radius=10,
+        )
+        dataFrame.grid(row=4, column=1, padx=(0,260), pady=(0,20))
+        
+        # Data display
+        self.dataDisplay = ctk.CTkTextbox(
+            dataFrame,
+            width=230, 
+            height=130,
+            corner_radius=10
+        )
+        self.dataDisplay.grid(row=0, column=0, padx=10, pady=6)
+        if self.extractedData:  # adding the data if it exists
+            self.dataDisplay.insert(tk.END, self.extractedData)
+
+        # Return home button
+        returnHomeButton = ctk.CTkButton(
+            success_frame,
+            text='Return Home',
+            text_color='#FFFFFF',
+            corner_radius=10,
+            fg_color='#a63a50',
+            font=('Lalezar', 30),
+            command=lambda: self.controller.show_frame(HomePage)
+        )
+        returnHomeButton.grid(row=5, column=1, padx=(0,260), pady=(20,0))
 
 class HowToUsePage(BasePage):
 
@@ -990,11 +1107,11 @@ audioUpload_label.pack(pady=10)
 #audioFile frame placeholder
 audioFileFrame = ttk.Frame(master=coverMediaFrame) #frame
 
-audioFile_label = tk.Label(master=audioFileFrame, width=30, borderwidth=8, relief='solid') #File display placeholder
+audiofileLabel = tk.Label(master=audioFileFrame, width=30, borderwidth=8, relief='solid') #File display placeholder
 deleteButton = ttk.Button(master=audioFileFrame, text='x', width=3) #Trash icon button placeholder
 
 #Calling 
-audioFile_label.pack(side='left')
+audiofileLabel.pack(side='left')
 deleteButton.pack(side='left')
 audioFileFrame.pack()
 #Cover frame
@@ -1004,7 +1121,7 @@ coverMediaFrame.pack(side='left')
 #Hidden Data Frame
 hiddenDataFrame = ttk.Frame(master=window)
 
-hiddenData_label = ttk.Label(master=hiddenDataFrame, text='Hidden Data',font = 'Calibri 30')
+hiddendataLabel = ttk.Label(master=hiddenDataFrame, text='Hidden Data',font = 'Calibri 30')
 #Input field
 input = ttk.Entry(master=hiddenDataFrame)
 inputString =tk.StringVar()
@@ -1017,7 +1134,7 @@ orLabel = tk.Label(master=hiddenDataFrame, text='Or', font='Calibri 20')
 fileUpload_label = tk.Label(master=hiddenDataFrame, text='Upload File', borderwidth=8, relief='solid', font='Calibri 20')
 
 #Calling
-hiddenData_label.pack()
+hiddendataLabel.pack()
 input.pack()
 orLabel.pack()
 fileUpload_label.pack()
@@ -1025,11 +1142,11 @@ fileUpload_label.pack()
 #File frame placeholder
 fileFrame = ttk.Frame(master=hiddenDataFrame) #frame
 
-file_label = tk.Label(master=fileFrame, width=30, borderwidth=8, relief='solid') #File display placeholder
+fileLabel = tk.Label(master=fileFrame, width=30, borderwidth=8, relief='solid') #File display placeholder
 deleteButton = ttk.Button(master=fileFrame, text='x', width=3) #Trash icon button placeholder
 
 #Calling 
-file_label.pack(side='left')
+fileLabel.pack(side='left')
 deleteButton.pack(side='left')
 fileFrame.pack(pady=10)
 
