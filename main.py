@@ -2,12 +2,8 @@ from tkinter import font
 import tkinter as tk
 from pathlib import Path
 import os
-
 import customtkinter as ctk
-
-
 from pages import HomePage, EmbedPage, ExtractPage, HowToUsePage, HelpContactPage, EmbedSuccessPage, ExtractSuccessPage
-
 
 class MainApp(ctk.CTk):
     def __init__(self): 
@@ -32,8 +28,6 @@ class MainApp(ctk.CTk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.show_frame(HomePage)  
-
-
 
     def show_frame(self, page_class):
         frame = self.frames[page_class]
@@ -72,8 +66,6 @@ def loadSnigletFont():
 if __name__ == "__main__":
     app = MainApp()
     app.mainloop()
-
-
 
 
 ''' 

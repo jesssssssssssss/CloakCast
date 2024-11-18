@@ -627,7 +627,7 @@ class ExtractPage(BasePage):
  
         #Function to delete selected audio file
         def deleteAudio():
-            selectedAudioFile = set("No File Selected")
+            self.selectedAudioFile = set("No File Selected")
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
 
         def decoder():
@@ -659,7 +659,6 @@ class ExtractPage(BasePage):
                 
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to extract and decrypt data: {str(e)}")
-
  
         def extractAction():
             decoder() #Running the decoder function when clicked
@@ -681,7 +680,6 @@ class ExtractPage(BasePage):
             fg_color="transparent",
             command=lambda: self.controller.show_frame(HomePage))
         self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
- 
  
         #Audio upload button
         audioUploadButton = ctk.CTkButton(
@@ -935,7 +933,6 @@ class HowToUsePage(BasePage):
         coverMediaDef.grid(row=0, column=0, padx=10, pady=6)
         coverMediaDef.insert("1.0", "This is the audio that you would like to hide your\nmessage, or data, inside of.")
         coverMediaDef.configure(state="disabled") 
-
         
         hiddenDataLabel = ctk.CTkLabel(
             htuPageContent,
