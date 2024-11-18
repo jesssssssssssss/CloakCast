@@ -268,22 +268,27 @@ class EmbedPage(BasePage):
 
         #Function to browse and open audio file
         def openAudioFile():
-          filePath = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
-          if filePath:
-           #Chosen audio display
-            self.selectedAudioFile.set(filePath) #updates the selected audio file
-            print(f"Selected file: {filePath}")
+            filePath = filedialog.askopenfilename(filetypes=[("Audio Files", "*.wav *.mp3")])
+            if filePath:
+                # Getting just the filename from the full path
+                fileName = os.path.basename(filePath)
+                self.selectedAudioFile.set(fileName)  
+                self.fullAudioPath = filePath  
+                print(f"Selected file: {filePath}")
         
         def openTextFile():
             filePath = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
             if filePath:
-                self.selectedTextFile.set(filePath) #updates the selected text file
+                fileName = os.path.basename(filePath)
+                self.selectedTextFile.set(fileName)  
+                self.fullTextPath = filePath  
                 print(f"Selected text file: {filePath}")
  
         #Function to delete selected audio file
         def deleteAudio():
             self.selectedAudioFile.set("No File Selected")
-            deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
+            if hasattr(self, 'fullAudioPath'):
+                delattr(self, 'fullAudioPath')
 
         def encoder():
             #Setting data for exception handling
@@ -297,39 +302,42 @@ class EmbedPage(BasePage):
             
             #Validating access codes matching
             if accessCode != confirmCode:
-                self.statusLabel.configure(text="Access codes do not match!", text_color='#a63a50')
-                return False #Returning false if codes don't match
+                messagebox.showerror("Error", "Access codes do not match!")
+                return 
             
             #Checking if both data has been inptuted and a file has been selected
             if data and textFilePath != "No File Selected":
-                self.statusLabel.configure(text=f"You can not embed a message and a file. Please choose one", text_color='#a63a50')
-                return False
+                messagebox.showerror("Error", "You can not embed a message and a file. Please choose one")
+                return 
             
             #Checking if neither input data or a file has been selected
             if not data and textFilePath == "No File Selected":
-                self.statusLabel.configure(text=f"Please enter a Message or Upload a File", text_color='#a63a50')
-                return False
+                messagebox.showerror("Error", "Please enter a Message or Upload a File")
+                return 
             
             #Checking if a file has been selected and it exists
-            if not data: # and self.selectedAudioFile - add this later
+            if not data:  # If using text file
+                textFilePath = getattr(self, 'fullTextPath', None)
+                if not textFilePath:
+                    messagebox.showerror("Error", "Please select a text file")
+                    return False
                 try:
-                    #Reading data from the selected text file
-                    with open(textFilePath, "r") as file: #the 'with' ensures the file closes when finished reading
-                            data = file.read()
+                    with open(textFilePath, "r") as file:
+                        data = file.read()
 
                 except Exception as e:
-                        self.statusLabel.configure(text="Failed to read file: {str(e)}", text_color='#a63a50')
-                        return False
+                        messagebox.showerror("Error", "Failed to read file: {str(e)}")
+                        return 
             try:         
 
                 # Encrypting the data here
                 encryptedData = EncryptionUtils.encrypt_data(data, accessCode) 
                 
                 #Getting chosen audio file
-                audioPath = self.selectedAudioFile.get()
+                audioPath = getattr(self, 'fullAudioPath', None)
                 #Error message for when required data has not been entered
-                if audioPath == "No File Selected":
-                    self.statusLabel.configure(text="Please select a Cover Media", text_color='#A63A50')
+                if not audioPath:
+                    messagebox.showerror("Error", "Please select a Cover Media")
                     return False
 
                 imgName = 'smile.png'
@@ -347,7 +355,7 @@ class EmbedPage(BasePage):
 
                 return True # Returns true if successful 
             except Exception as e:
-                self.statusLabel.configure(text=f"Failed to encrypt and embed data: {str(e)}", text_color='#a63a50')
+                messagebox.showerror("Error", "Failed to encrypt and embed data: {str(e)}")
                 return False #Returns false if there is an error
 
         def submitAction():
