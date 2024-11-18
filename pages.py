@@ -235,7 +235,7 @@ class HomePage(BasePage):
             wrap="word"  
         )
         hpScrollBox.grid(row=0, column=0, padx=15, pady=15)
-        hpScrollBox.insert("1.0", "How this works Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean sit amet odio ullamcorper, dictum libero non, facilisis magna. Fusce id pulvinar neque, ut pretium odio. Nunc finibus ante nec massa dictum vestibulum. Etiam id consequat purus, quis dapibus est.Aliquam viverra vitae lectus in vehicula. In ac diam ac justo tincidunt efficitur.")
+        hpScrollBox.insert("1.0", "Welcome to CloakCast, your gateway to secure and seamless audio steganography. CloakCast allows you to discreetly embed messages or text files into an MP3 audio file of your choice. Navigate to the Embed page to upload your cover audio, set a unique access code, and select whether to embed a typed message or an uploaded text file. The modified audio file is saved directly to your computer, eliminating the need for additional downloads. Share your audio file with colleagues, who can retrieve the hidden data on the Extract page. For detailed guidance, visit the How To Use section.")
 
 class EmbedPage(BasePage):
 
@@ -390,14 +390,13 @@ class EmbedPage(BasePage):
         #Audio upload button
         audioUploadButton = ctk.CTkButton(master=embedPageContent,
                                     text='Upload Audio',
-                                    text_color='#393839',
-                                    border_width= 7,
+                                    text_color='#ffffff',
                                     border_color='#393839',
                                     corner_radius = 100,
-                                    fg_color= '#FFFFFF',
+                                    fg_color= '#393839',
                                     font=('Lalezar', 24),
                                     command=openAudioFile,
-                                    height=50) 
+                                    height=40) 
         audioUploadButton.grid(row=2, column=0, pady=(10, 0), padx=(40,0))
         
         audioFileLabelFrame = ctk.CTkFrame(
