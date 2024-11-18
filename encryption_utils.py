@@ -6,7 +6,7 @@ import base64
 class EncryptionUtils:
     @staticmethod
     def generate_key_from_password(password: str, salt: bytes = b'static_salt') -> bytes:
-        """Generate an encryption key from a password using PBKDF2."""
+        # Generating an encryption key from a password using PBKDF2 
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=32,
@@ -18,7 +18,7 @@ class EncryptionUtils:
 
     @staticmethod
     def encrypt_data(data: str, password: str) -> bytes:
-        """Encrypt data using a password."""
+        #Encrypting data using a password
         try:
             key = EncryptionUtils.generate_key_from_password(password)
             f = Fernet(key)
@@ -29,7 +29,7 @@ class EncryptionUtils:
 
     @staticmethod
     def decrypt_data(encrypted_data: bytes, password: str) -> str:
-        """Decrypt data using a password."""
+        #Decrypting data using a password
         try:
             key = EncryptionUtils.generate_key_from_password(password)
             f = Fernet(key)
