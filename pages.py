@@ -10,6 +10,7 @@ from PIL import Image
 from tkinter import messagebox
 import tkinter as tk
 from encryption_utils import EncryptionUtils
+from db_utils import DatabaseManager
 
 class Sidebar(ctk.CTkFrame):
     def __init__(self, parent, controller):
@@ -289,12 +290,6 @@ class EmbedPage(BasePage):
             self.selectedAudioFile.set("No File Selected")
             if hasattr(self, 'fullAudioPath'):
                 delattr(self, 'fullAudioPath')
-        
-        #Function to delete selected text file
-        def deleteText():
-            self.selectedTextFile.set("No File Selected")
-            if hasattr(self, 'fullTextPath'):
-                delattr(self, 'fullTextPath')
 
         def encoder():
             #Setting data for exception handling
@@ -536,7 +531,7 @@ class EmbedPage(BasePage):
 
 
         #Delete button for chosen Text file display
-        deleteButton = ctk.CTkButton(master=fileUploadLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteText, font=("Sniglet", 22)) 
+        deleteButton = ctk.CTkButton(master=fileUploadLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteAudio, font=("Sniglet", 22)) 
         deleteButton.grid(row=0, column=0, sticky='e', padx=(0,20), pady=(0,3))
 
         #Submit button--------------------
@@ -631,18 +626,10 @@ class ExtractPage(BasePage):
             self.fullAudioPath = filePath 
             print(f"Selected file: {filePath}")
  
- 
         #Function to delete selected audio file
         def deleteAudio():
-<<<<<<< HEAD
             self.selectedAudioFile = set("No File Selected")
             deleteButton.configure(state=ctk.NORMAL) #Active only when a file has been selected
-=======
-            self.selectedAudioFile.set("No File Selected")
-            if hasattr(self, 'fullAudioPath'):
-                delattr(self, 'fullAudioPath')
-        
->>>>>>> 496ea421b48eab4932392bef5027fdb9f70306f4
 
         def decoder():
             try:
@@ -727,7 +714,7 @@ class ExtractPage(BasePage):
         audioFileLabel.grid(row=0, column=0, padx=10, pady=6)
 
         #Delete button for chosen audio file display
-        deleteButton = ctk.CTkButton(master=audioFileLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteAudio, font=("Sniglet", 22)) 
+        deleteButton = ctk.CTkButton(master=audioFileLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteAudio, font=("Sniglet", 22)) #Trash icon button placeholder
         deleteButton.grid(row=0, column=0, sticky='e', padx=(0,20), pady=(0,3))
 
         # Access Code input
@@ -753,6 +740,15 @@ class ExtractPage(BasePage):
             show="*"  # This will hide the password
         )
         accessCodeInput.grid(row=0, column=0, padx=5, pady=5)
+
+        # Result text area
+        resultText = ctk.CTkTextbox(
+            master=extractPageContent,
+            width=300,
+            height=100,
+            corner_radius=10
+        )
+        resultText.grid(row=8, column=1, padx=(0,260), pady=(20,0))
  
         #Extract button--------------------
         extractButton = ctk.CTkButton(master=extractPageContent,
@@ -1058,12 +1054,14 @@ class HowToUsePage(BasePage):
 
 class HelpContactPage(BasePage):
     def create_content(self):
+       
+        self.db_manager = DatabaseManager()
 
         helpContactPageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
-        helpContactPageContent.grid(row=1, column=1, sticky="nsew", padx=2, pady=2)
+        helpContactPageContent.grid(row=0, column=0, sticky="nsew", padx=2, pady=0)
         helpContactPageContent.grid_columnconfigure((0, 1), weight=1)
 
-        # Back arrow that returns user to home
+        
         current_dir = os.path.dirname(os.path.abspath(__file__))
         backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
 
@@ -1078,11 +1076,138 @@ class HelpContactPage(BasePage):
                 self.controller.show_frame(HomePage)
             )
         )
+        self.backArrowButton.grid(row=0, column=0, padx=(0,0), pady=0, ipadx=0, ipady=0)
+
+        # Page title
+        headLabel = ctk.CTkLabel(
+            master=helpContactPageContent, 
+            text='Need Help?', 
+            font=('Sniglet', 50),
+            text_color='#a63a50'
+        )
+        headLabel.grid(row=0, column=1, pady=(0,0))
+
+        # Contact form frame
+        formFrame = ctk.CTkFrame(
+            helpContactPageContent,
+            fg_color="#393839",
+            corner_radius=10,
+        )
+        formFrame.grid(row=1, column=1, padx=0, pady=0)
+
+        # Name input
+        nameLabel = ctk.CTkLabel(
+            formFrame, 
+            text="Name",
+            font=('Lalezar', 20),
+            text_color='white'
+        )
+        nameLabel.grid(row=0, column=0, padx=20, pady=(20,5), sticky='w')
+
+        self.nameEntry = ctk.CTkEntry(
+            formFrame,
+            width=400,
+            height=35,
+            corner_radius=100,
+            fg_color="white",
+            text_color="#393839"
+        )
+        self.nameEntry.grid(row=1, column=0, padx=20, pady=(0,20))
+
+        # Email input
+        emailLabel = ctk.CTkLabel(
+            formFrame, 
+            text="Email",
+            font=('Lalezar', 20),
+            text_color='white'
+        )
+        emailLabel.grid(row=2, column=0, padx=20, pady=(0,5), sticky='w')
+
+        self.emailEntry = ctk.CTkEntry(
+            formFrame,
+            width=400,
+            height=35,
+            corner_radius=100,
+            fg_color="white",
+            text_color="#393839"
+        )
+        self.emailEntry.grid(row=3, column=0, padx=20, pady=(0,20))
+
+        # Message input
+        messageLabel = ctk.CTkLabel(
+            formFrame, 
+            text="Message",
+            font=('Lalezar', 20),
+            text_color='white'
+        )
+        messageLabel.grid(row=4, column=0, padx=20, pady=(0,5), sticky='w')
+
+        self.messageText = ctk.CTkTextbox(
+            formFrame,
+            width=400,
+            height=150,
+            corner_radius=10,
+            fg_color="white",
+            text_color="#393839"
+        )
+        self.messageText.grid(row=5, column=0, padx=20, pady=(0,20))
+
+        # Submit button
+        submitButton = ctk.CTkButton(
+            formFrame,
+            text="Send",
+            font=('Lalezar', 20),
+            fg_color="#a63a50",
+            hover_color="#8b3143",
+            corner_radius=100,
+            command=self.submit_form
+        )
+        submitButton.grid(row=6, column=0, pady=(0,20))
+
+        # Status label for feedback
+        self.statusLabel = ctk.CTkLabel(
+            formFrame,
+            text="",
+            font=('Lalezar', 16),
+            text_color='white'
+        )
+        self.statusLabel.grid(row=7, column=0, pady=(0,20))
+
+    def validate_email(self, email):
         
-        self.backArrowButton.grid(row=0, column=0, padx=(0,0), ipadx=0, ipady=0)
-        
-        headLabel = ctk.CTkLabel(master=helpContactPageContent, text='Help / Contact Us', font=('Lalezar', 50))
-        headLabel.grid(row=1, column=1, sticky="w")
+        import re
+        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return re.match(pattern, email) is not None
+
+    def submit_form(self):
+        # Handling form submission
+        name = self.nameEntry.get().strip()
+        email = self.emailEntry.get().strip()
+        message = self.messageText.get("1.0", "end-1c").strip()
+
+        # Validation
+        if not all([name, email, message]):
+            self.statusLabel.configure(text="Please fill in all fields", text_color="#FFB6C1")
+            return
+
+        if not self.validate_email(email):
+            self.statusLabel.configure(text="Please enter a valid email address", text_color="#FFB6C1")
+            return
+
+        try:
+            # Save to database
+            self.db_manager.save_contact(name, email, message)
+            
+            # Clear form
+            self.nameEntry.delete(0, 'end')
+            self.emailEntry.delete(0, 'end')
+            self.messageText.delete("1.0", "end")
+            
+            # Show success message
+            self.statusLabel.configure(text="Message sent successfully!", text_color="#90EE90")
+        except Exception as e:
+            self.statusLabel.configure(text="Error sending message. Please try again.", text_color="#FFB6C1")
+            print(f"Database error: {e}")
 
 
 
