@@ -1,5 +1,5 @@
 import customtkinter as ctk
-import customtkinter
+from customtkinter import CTkImage
 from PIL import Image
 import os 
 from os import system
@@ -276,7 +276,8 @@ class EmbedPage(BasePage):
                 self.selectedAudioFile.set(fileName)  
                 self.fullAudioPath = filePath  
                 print(f"Selected file: {filePath}")
-        
+
+        #Function to delete selected text file
         def openTextFile():
             filePath = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
             if filePath:
@@ -296,6 +297,19 @@ class EmbedPage(BasePage):
             self.selectedTextFile.set("No File Selected")
             if hasattr(self, 'fullTextPath'):
                 delattr(self, 'fullTextPath')
+
+
+
+        #This function hides and shows entered access code
+        def togglePassword(entry, button, hidden):
+            if hidden[0]:  # If currently hidden
+                entry.configure(show="")  # Show text
+                button.configure(image=openEyeImage)  # Set open eye icon
+            else:
+                entry.configure(show="*")  # Hide text
+                button.configure(image=hideEyeImage)  # Set hide eye icon
+            hidden[0] = not hidden[0]  # Toggle the state
+   
 
         def encoder():
             #Setting data for exception handling
@@ -437,7 +451,21 @@ class EmbedPage(BasePage):
         enterCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Enter Code', text_color='#393839', font=('lalezar', 20))
         enterCodeLabel.grid(row=5, column=0, padx=(40,0), pady=(0,5))  
 
-    
+        # Initialize the toggle state
+        self.input_code_hidden = [True]
+        self.confirm_code_hidden = [True]
+
+        # Load and prepare the images
+        hideEyeImage = ctk.CTkImage(
+            light_image=Image.open("Images\\HideEye.png"),
+            size=(10, 10) 
+        )
+
+        openEyeImage = ctk.CTkImage(
+            light_image=Image.open("Images\\OpenEye.png"), 
+            size=(10, 10)  
+        )
+
         inputAccessCodeFrame = ctk.CTkFrame(
             embedPageContent,
             fg_color="#393839",
@@ -445,12 +473,17 @@ class EmbedPage(BasePage):
         )
         inputAccessCodeFrame.grid(row=6, column=0, padx=(40,0), pady=(0,10))  
 
-        inputAccessCode = ctk.CTkEntry(master=inputAccessCodeFrame, placeholder_text='...', placeholder_text_color='#393839', fg_color="white", corner_radius=100, width=180, height=28)
+        
+        inputAccessCode = ctk.CTkEntry(master=inputAccessCodeFrame, placeholder_text='...', placeholder_text_color='#393839', fg_color="white", corner_radius=100, width=180, height=28, show="*",
+        )
         inputAccessCode.grid(row=6, column=0, padx=5, pady=5)
         
+
         #View access code button
-        viewAccessCode = ctk.CTkButton(master=inputAccessCode, text='o', width=3, height=3, fg_color='#FFFFFF', text_color='#393839', hover_color='#FFFFFF') #Add command to this
-        viewAccessCode.grid(row=0, column=0, sticky='e', padx=(0,10))
+        viewAccessCode = ctk.CTkButton(master=inputAccessCode, image = hideEyeImage, text = "", width=3, height=3, fg_color='#FFFFFF', text_color='#393839', hover_color='#FFFFFF',
+        command=lambda: togglePassword(inputAccessCode, viewAccessCode, self.input_code_hidden)
+        )
+        viewAccessCode.grid(row=0, column=0, sticky='e', padx=(0, 10))
         
         confirmCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Confirm Code', width=50, text_color='#393839', font=('lalezar', 20))
         confirmCodeLabel.grid(row=7, column=0, padx=(40,0))
@@ -465,11 +498,12 @@ class EmbedPage(BasePage):
         )
         ConfirmAccessCodeFrame.grid(row=8, column=0, padx=(40,0))
 
-        ConfirmAccessCode = ctk.CTkEntry(master=ConfirmAccessCodeFrame, placeholder_text='...', placeholder_text_color='#393839', fg_color="white", corner_radius=100, width=180, height=28)
+        ConfirmAccessCode = ctk.CTkEntry(master=ConfirmAccessCodeFrame, placeholder_text='...', placeholder_text_color='#393839', fg_color="white", corner_radius=100, width=180, height=28, show = "*")
         ConfirmAccessCode.grid(row=0, column=0, padx=5, pady=5)
         
         #View confirmed access code button
-        viewConfirmedAccessCode = ctk.CTkButton(master=ConfirmAccessCode, text='o', width=3, height=3, fg_color='#FFFFFF', text_color='#393839', hover_color='#FFFFFF') #Add command to this
+        viewConfirmedAccessCode = ctk.CTkButton(master=ConfirmAccessCode, image = hideEyeImage, text ="", width=3, height=3, fg_color='#FFFFFF', text_color='#393839', hover_color='#FFFFFF',
+         command=lambda: togglePassword(ConfirmAccessCode, viewConfirmedAccessCode, self.confirm_code_hidden)) 
         viewConfirmedAccessCode.grid(row=0, column=0, sticky='e', padx=(0,10))
         
         
@@ -618,6 +652,31 @@ class ExtractPage(BasePage):
     def create_content(self):
  
         #Functions--------------------
+
+        #This function hides and shows entered access code
+        def togglePassword(entry, button, hidden):
+            if hidden[0]:  # If currently hidden
+                entry.configure(show="")  # Show text
+                button.configure(image=openEyeImage)  # Set open eye icon
+            else:
+                entry.configure(show="*")  # Hide text
+                button.configure(image=hideEyeImage)  # Set hide eye icon
+            hidden[0] = not hidden[0]  # Toggle the state
+        
+        # Initialize the toggle state
+        self.input_code_hidden = [True]
+        self.confirm_code_hidden = [True]
+
+        # Load and prepare the images
+        hideEyeImage = ctk.CTkImage(
+            light_image=Image.open("Images\\HideEye.png"),
+            size=(10, 10) 
+        )
+
+        openEyeImage = ctk.CTkImage(
+            light_image=Image.open("Images\\OpenEye.png"), 
+            size=(10, 10)  
+        )
  
         #Variable holding selected audio file
         self.selectedAudioFile = ctk.StringVar(value="No File Selected")
@@ -744,9 +803,18 @@ class ExtractPage(BasePage):
             corner_radius=100,
             width=180,
             height=28,
-            show="*"  # This will hide the password
+            show="*",
+            placeholder_text="..."
         )
         accessCodeInput.grid(row=0, column=0, padx=5, pady=5)
+
+        # Button for toggling password visibility
+        toggleButton = ctk.CTkButton(
+            master=accessCodeFrame,
+            image=hideEyeImage, text ="", width=3, height=3, fg_color='#FFFFFF', text_color='#393839', hover_color='#FFFFFF',
+            command=lambda: togglePassword(accessCodeInput, toggleButton, self.input_code_hidden)
+        )
+        toggleButton.grid(row=0, column=0, sticky='e', padx=(0,10))
  
         #Extract button--------------------
         extractButton = ctk.CTkButton(master=extractPageContent,
@@ -1210,74 +1278,3 @@ class HelpContactPage(BasePage):
 
 
 
-# this is the code you had before, most of it is the same, but I've left this version here incase you want to look over it to see what the differences are! The main alteration is that it's been moved into a class.
-
-''' #Inside window - we can probs inherit this and just have the contents later on !!So this would actually be a frame then? !!
-window = tk.Tk()
-window.title('Embed')
-window.geometry('800x800') #Size of the window
-
-#Cover Media Frame
-coverMediaFrame = ttk.Frame(master=window)
-
-coverMedia_label = ttk.Label(master=coverMediaFrame, text='Cover Media', font = 'Calibri 30')
-coverMedia_label.pack()
-
-#Audio upload placeholder
-audioUpload_label = tk.Label(master=coverMediaFrame, text='Upload Audio', borderwidth=8, relief='solid', font='Calibri 20')
-audioUpload_label.pack(pady=10)
-
-
-
-#audioFile frame placeholder
-audioFileFrame = ttk.Frame(master=coverMediaFrame) #frame
-
-audiofileLabel = tk.Label(master=audioFileFrame, width=30, borderwidth=8, relief='solid') #File display placeholder
-deleteButton = ttk.Button(master=audioFileFrame, text='x', width=3) #Trash icon button placeholder
-
-#Calling 
-audiofileLabel.pack(side='left')
-deleteButton.pack(side='left')
-audioFileFrame.pack()
-#Cover frame
-coverMediaFrame.pack(side='left')
-
-
-#Hidden Data Frame
-hiddenDataFrame = ttk.Frame(master=window)
-
-hiddendataLabel = ttk.Label(master=hiddenDataFrame, text='Hidden Data',font = 'Calibri 30')
-#Input field
-input = ttk.Entry(master=hiddenDataFrame)
-inputString =tk.StringVar()
-input = tk.Entry(master=hiddenDataFrame, textvariable=inputString, borderwidth=8, relief='solid')
-
-#or
-orLabel = tk.Label(master=hiddenDataFrame, text='Or', font='Calibri 20')
-
-#File upload placeholder
-fileUpload_label = tk.Label(master=hiddenDataFrame, text='Upload File', borderwidth=8, relief='solid', font='Calibri 20')
-
-#Calling
-hiddendataLabel.pack()
-input.pack()
-orLabel.pack()
-fileUpload_label.pack()
-
-#File frame placeholder
-fileFrame = ttk.Frame(master=hiddenDataFrame) #frame
-
-fileLabel = tk.Label(master=fileFrame, width=30, borderwidth=8, relief='solid') #File display placeholder
-deleteButton = ttk.Button(master=fileFrame, text='x', width=3) #Trash icon button placeholder
-
-#Calling 
-fileLabel.pack(side='left')
-deleteButton.pack(side='left')
-fileFrame.pack(pady=10)
-
-hiddenDataFrame.pack(side='left')
-
-
-#run
-window.mainloop()
-'''
