@@ -245,19 +245,35 @@ class EmbedPage(BasePage):
         self.resetPage()
         
     def resetPage(self):
-
-        if hasattr(self, 'selectedAudioFile'):  # Checking first if attributes exist
-            self.selectedAudioFile.set("No File Selected") # Resetting the attributes
-        if hasattr(self, 'dataInput'):
-            self.dataInput.delete(0, 'end')
+        # Reset file selections
+        if hasattr(self, 'selectedAudioFile'):
+            self.selectedAudioFile.set("No File Selected")
+        if hasattr(self, 'selectedTextFile'):
+            self.selectedTextFile.set("No File Selected")
+        
+        # Reset input fields
         if hasattr(self, 'inputAccessCode'):
             self.inputAccessCode.delete(0, 'end')
         if hasattr(self, 'ConfirmAccessCode'):
             self.ConfirmAccessCode.delete(0, 'end')
+        if hasattr(self, 'dataInput'):
+            self.dataInput.delete(0, 'end')
+        
+        # Reset status label
         if hasattr(self, 'statusLabel'):
             self.statusLabel.configure(text="")
-        if hasattr(self, 'selectedTextFile'):
-            self.selectedTextFile.set("No File Selected")
+        
+        # Remove file paths if they exist
+        if hasattr(self, 'fullAudioPath'):
+            delattr(self, 'fullAudioPath')
+        if hasattr(self, 'fullTextPath'):
+            delattr(self, 'fullTextPath')
+        
+        # Reset password visibility
+        if hasattr(self, 'input_code_hidden'):
+            self.input_code_hidden[0] = True
+        if hasattr(self, 'confirm_code_hidden'):
+            self.confirm_code_hidden[0] = True
 
     def create_content(self):
 
@@ -285,7 +301,7 @@ class EmbedPage(BasePage):
                 self.selectedTextFile.set(fileName)  
                 self.fullTextPath = filePath  
                 print(f"Selected text file: {filePath}")
- 
+    
         #Function to delete selected audio file
         def deleteAudio():
             self.selectedAudioFile.set("No File Selected")
@@ -298,8 +314,6 @@ class EmbedPage(BasePage):
             if hasattr(self, 'fullTextPath'):
                 delattr(self, 'fullTextPath')
 
-
-
         #This function hides and shows entered access code
         def togglePassword(entry, button, hidden):
             if hidden[0]:  # If currently hidden
@@ -310,16 +324,12 @@ class EmbedPage(BasePage):
                 button.configure(image=hideEyeImage)  # Set hide eye icon
             hidden[0] = not hidden[0]  # Toggle the state
    
-
         def encoder():
-            #Setting data for exception handling
-            data = "No File Selected"
-
             #Getting hidden data, file path and access code
-            data = dataInput.get().strip()
+            data = self.dataInput.get().strip()
             textFilePath = self.selectedTextFile.get()
-            accessCode = inputAccessCode.get()
-            confirmCode = ConfirmAccessCode.get()
+            accessCode = self.inputAccessCode.get()
+            confirmCode = self.ConfirmAccessCode.get()
             
             #Validating access codes matching
             if accessCode != confirmCode:
@@ -473,37 +483,65 @@ class EmbedPage(BasePage):
         )
         inputAccessCodeFrame.grid(row=6, column=0, padx=(40,0), pady=(0,10))  
 
-        
-        inputAccessCode = ctk.CTkEntry(master=inputAccessCodeFrame, placeholder_text='...', placeholder_text_color='#393839', fg_color="white", corner_radius=100, width=180, height=28, show="*",
+        # Create input access code as a class attribute
+        self.inputAccessCode = ctk.CTkEntry(
+            master=inputAccessCodeFrame, 
+            placeholder_text='...', 
+            placeholder_text_color='#393839', 
+            fg_color="white", 
+            corner_radius=100, 
+            width=180, 
+            height=28, 
+            show="*"
         )
-        inputAccessCode.grid(row=6, column=0, padx=5, pady=5)
-        
+        self.inputAccessCode.grid(row=0, column=0, padx=5, pady=5)
 
-        #View access code button
-        viewAccessCode = ctk.CTkButton(master=inputAccessCode, image = hideEyeImage, text = "", width=3, height=3, fg_color='#FFFFFF', text_color='#393839', hover_color='#FFFFFF',
-        command=lambda: togglePassword(inputAccessCode, viewAccessCode, self.input_code_hidden)
+        # View access code button
+        viewAccessCode = ctk.CTkButton(
+            master=self.inputAccessCode, 
+            image=hideEyeImage, 
+            text="", 
+            width=3, 
+            height=3, 
+            fg_color='#FFFFFF', 
+            text_color='#393839', 
+            hover_color='#FFFFFF',
+            command=lambda: togglePassword(self.inputAccessCode, viewAccessCode, self.input_code_hidden)
         )
         viewAccessCode.grid(row=0, column=0, sticky='e', padx=(0, 10))
         
-        confirmCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Confirm Code', width=50, text_color='#393839', font=('lalezar', 20))
-        confirmCodeLabel.grid(row=7, column=0, padx=(40,0))
-        
-        #Confirm input field
-
+        # Confirm Access Code section
         ConfirmAccessCodeFrame = ctk.CTkFrame(
             embedPageContent,
             fg_color="#393839",
             corner_radius=100,
-            
         )
         ConfirmAccessCodeFrame.grid(row=8, column=0, padx=(40,0))
 
-        ConfirmAccessCode = ctk.CTkEntry(master=ConfirmAccessCodeFrame, placeholder_text='...', placeholder_text_color='#393839', fg_color="white", corner_radius=100, width=180, height=28, show = "*")
-        ConfirmAccessCode.grid(row=0, column=0, padx=5, pady=5)
+        self.ConfirmAccessCode = ctk.CTkEntry(
+            master=ConfirmAccessCodeFrame, 
+            placeholder_text='...', 
+            placeholder_text_color='#393839', 
+            fg_color="white", 
+            corner_radius=100, 
+            width=180, 
+            height=28, 
+            show="*"
+        )
+        self.ConfirmAccessCode.grid(row=0, column=0, padx=5, pady=5)
         
-        #View confirmed access code button
-        viewConfirmedAccessCode = ctk.CTkButton(master=ConfirmAccessCode, image = hideEyeImage, text ="", width=3, height=3, fg_color='#FFFFFF', text_color='#393839', hover_color='#FFFFFF',
-         command=lambda: togglePassword(ConfirmAccessCode, viewConfirmedAccessCode, self.confirm_code_hidden)) 
+        # View confirmed access code button
+        viewConfirmedAccessCode = ctk.CTkButton(
+            master=self.ConfirmAccessCode, 
+            image=hideEyeImage, 
+            text="", 
+            width=3, 
+            height=3, 
+            fg_color='#FFFFFF', 
+            text_color='#393839', 
+            hover_color='#FFFFFF',
+            command=lambda: togglePassword(self.ConfirmAccessCode, viewConfirmedAccessCode, self.confirm_code_hidden)
+        ) 
         viewConfirmedAccessCode.grid(row=0, column=0, sticky='e', padx=(0,10))
         
         
@@ -522,8 +560,16 @@ class EmbedPage(BasePage):
         dataInputFrame.grid(row=2, column=3, rowspan=2, padx=(0,50))
 
         #Input field
-        dataInput = ctk.CTkEntry(master=dataInputFrame, placeholder_text='Enter Message...', placeholder_text_color='#393839', font=('Sniglet', 20), fg_color="white", width=230, height=130)
-        dataInput.grid(row=2, column=3, padx=5, pady=5, rowspan=2)
+        self.dataInput = ctk.CTkEntry(
+            master=dataInputFrame, 
+            placeholder_text='Enter Message...', 
+            placeholder_text_color='#393839', 
+            font=('Sniglet', 20), 
+            fg_color="white", 
+            width=230, 
+            height=130
+        )
+        self.dataInput.grid(row=0, column=0, padx=5, pady=5)
         
         #or
         orLabel = ctk.CTkLabel(master=embedPageContent, text='or', font=('Sniglet', 24), text_color="#a63a50")
@@ -700,7 +746,7 @@ class ExtractPage(BasePage):
         def decoder():
             try:
                 # Getting the access code
-                accessCode = accessCodeInput.get()
+                accessCode = self.accessCodeInput.get()
                 
                 #Audio to be extracted is chosen and loaded
                 audioPath = getattr(self, 'fullAudioPath', None)
@@ -797,7 +843,7 @@ class ExtractPage(BasePage):
         )
         accessCodeFrame.grid(row=6, column=1, padx=(0,260))
 
-        accessCodeInput = ctk.CTkEntry(
+        self.accessCodeInput = ctk.CTkEntry(
             master=accessCodeFrame, 
             fg_color="white",
             corner_radius=100,
@@ -806,13 +852,13 @@ class ExtractPage(BasePage):
             show="*",
             placeholder_text="..."
         )
-        accessCodeInput.grid(row=0, column=0, padx=5, pady=5)
+        self.accessCodeInput.grid(row=0, column=0, padx=5, pady=5)
 
         # Button for toggling password visibility
         toggleButton = ctk.CTkButton(
             master=accessCodeFrame,
             image=hideEyeImage, text ="", width=3, height=3, fg_color='#FFFFFF', text_color='#393839', hover_color='#FFFFFF',
-            command=lambda: togglePassword(accessCodeInput, toggleButton, self.input_code_hidden)
+            command=lambda: togglePassword(self.accessCodeInput, toggleButton, self.input_code_hidden)
         )
         toggleButton.grid(row=0, column=0, sticky='e', padx=(0,10))
  
