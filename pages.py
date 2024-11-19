@@ -1120,14 +1120,15 @@ class HowToUsePage(BasePage):
 
 class HelpContactPage(BasePage):
     def create_content(self):
-       
         self.db_manager = DatabaseManager()
 
-        helpContactPageContent = ctk.CTkFrame(self.contentFrame, fg_color='White', corner_radius=10)
-        helpContactPageContent.grid(row=0, column=0, sticky="nsew", padx=2, pady=0)
-        helpContactPageContent.grid_columnconfigure((0, 1), weight=1)
+        # Main container for all content
+        helpContactPageContent = ctk.CTkFrame(self.contentFrame, fg_color="white")
+        helpContactPageContent.grid(row=1, column=1, sticky="nsew")
+        helpContactPageContent.grid_columnconfigure(0, weight=1)
+        helpContactPageContent.grid_rowconfigure(1, weight=1)
 
-        
+        # Back Arrow
         current_dir = os.path.dirname(os.path.abspath(__file__))
         backArrowPath = os.path.join(current_dir, "Images", "BackArrow.png")
 
@@ -1142,117 +1143,116 @@ class HelpContactPage(BasePage):
                 self.controller.show_frame(HomePage)
             )
         )
-        self.backArrowButton.grid(row=0, column=0, padx=(0,0), pady=0, ipadx=0, ipady=0)
+        self.backArrowButton.grid(row=0, column=0, padx=(20,0), pady=(20,0), sticky='w')
+
+        # Main content container
+        mainContent = ctk.CTkFrame(helpContactPageContent, fg_color="#FEFCFB")
+        mainContent.grid(row=1, column=0, sticky="n")
+        mainContent.grid_columnconfigure((0,1), weight=1)
 
         # Page title
         headLabel = ctk.CTkLabel(
-            master=helpContactPageContent, 
+            master=mainContent, 
             text='Need Help?', 
             font=('Sniglet', 50),
             text_color='#a63a50'
         )
-        headLabel.grid(row=0, column=1, pady=(0,0))
+        headLabel.grid(row=0, column=0, columnspan=2, pady=(0,30))
 
-        # Contact form frame
-        formFrame = ctk.CTkFrame(
-            helpContactPageContent,
+       
+        infoFrame = ctk.CTkFrame(mainContent, fg_color="#393839", corner_radius=25)
+        infoFrame.grid(row=1, column=0, padx=(40,20), pady=(0,50))
+        
+        infoText = ctk.CTkLabel(master=infoFrame, font=('Inter', 20), fg_color="white", width=280, height=180, corner_radius=10, text="Information on how\nsteganography works can\nbe found on the home\npage or the about page.\nTo contact us, use the\nform here.")
+        infoText.grid(row=2, column=3, padx=12, pady=12, rowspan=2)
+
+
+        # Form container
+        formContainer = ctk.CTkFrame(mainContent, fg_color="#FEFCFB")
+        formContainer.grid(row=1, column=1, padx=(20,40), sticky="n")
+
+        enterEmailLabel = ctk.CTkLabel(
+            formContainer,
+            text="Enter Email:",
+            font=('Sniglet', 20)
+            )
+        enterEmailLabel.grid(row=0, column=0, sticky='w', padx=(20,0))
+
+        emailEntryFrame = ctk.CTkFrame(
+            formContainer,
             fg_color="#393839",
-            corner_radius=10,
+            corner_radius=100
         )
-        formFrame.grid(row=1, column=1, padx=0, pady=0)
-
-        # Name input
-        nameLabel = ctk.CTkLabel(
-            formFrame, 
-            text="Name",
-            font=('Lalezar', 20),
-            text_color='white'
-        )
-        nameLabel.grid(row=0, column=0, padx=20, pady=(20,5), sticky='w')
-
-        self.nameEntry = ctk.CTkEntry(
-            formFrame,
-            width=400,
-            height=35,
-            corner_radius=100,
-            fg_color="white",
-            text_color="#393839"
-        )
-        self.nameEntry.grid(row=1, column=0, padx=20, pady=(0,20))
-
+        emailEntryFrame.grid(row=1, column=0, pady=(0,20))
+        
         # Email input
-        emailLabel = ctk.CTkLabel(
-            formFrame, 
-            text="Email",
-            font=('Lalezar', 20),
-            text_color='white'
-        )
-        emailLabel.grid(row=2, column=0, padx=20, pady=(0,5), sticky='w')
-
         self.emailEntry = ctk.CTkEntry(
-            formFrame,
-            width=400,
-            height=35,
-            corner_radius=100,
+            emailEntryFrame,
+            width=300,
+            height=40,
+            corner_radius=20,
+            border_width=2,
+            border_color="#E5E5E5",
             fg_color="white",
-            text_color="#393839"
+            text_color="black"
         )
-        self.emailEntry.grid(row=3, column=0, padx=20, pady=(0,20))
+        self.emailEntry.grid(row=0, column=0, padx=10, pady=6)
+
+        contactMessageFrame = ctk.CTkFrame(
+            formContainer,
+            fg_color="#393839",
+            corner_radius=10
+        )
+        contactMessageFrame.grid(row=2, column=0, pady=(0,20))
 
         # Message input
-        messageLabel = ctk.CTkLabel(
-            formFrame, 
-            text="Message",
-            font=('Lalezar', 20),
-            text_color='white'
-        )
-        messageLabel.grid(row=4, column=0, padx=20, pady=(0,5), sticky='w')
-
-        self.messageText = ctk.CTkTextbox(
-            formFrame,
-            width=400,
-            height=150,
-            corner_radius=10,
+        self.contactMessage = ctk.CTkTextbox(
+            contactMessageFrame,
+            width=300,
+            height=100,
+            corner_radius=20,
             fg_color="white",
-            text_color="#393839"
+            text_color="black",
+            font=('Sniglet', 20)
         )
-        self.messageText.grid(row=5, column=0, padx=20, pady=(0,20))
+        self.contactMessage.insert("1.0", "Enter Message...")
+        self.contactMessage.grid(row=0, column=0, padx=8, pady=8, sticky='n')
 
         # Submit button
         submitButton = ctk.CTkButton(
-            formFrame,
+            helpContactPageContent,
             text="Send",
             font=('Lalezar', 20),
+            text_color="white",
             fg_color="#a63a50",
             hover_color="#8b3143",
-            corner_radius=100,
+            corner_radius=20,
+            width=150,
+            height=55,
             command=self.submit_form
         )
-        submitButton.grid(row=6, column=0, pady=(0,20))
+        submitButton.grid(row=2, column=0, pady=(0,100))
 
         # Status label for feedback
         self.statusLabel = ctk.CTkLabel(
-            formFrame,
+            formContainer,
             text="",
-            font=('Lalezar', 16),
-            text_color='white'
+            font=('Segoe UI', 14),
+            text_color='black'
         )
-        self.statusLabel.grid(row=7, column=0, pady=(0,20))
+        self.statusLabel.grid(row=4, column=0, pady=(0,20))
 
     def validate_email(self, email):
-        
         import re
         pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         return re.match(pattern, email) is not None
 
     def submit_form(self):
-        # Handling form submission
-        name = self.nameEntry.get().strip()
         email = self.emailEntry.get().strip()
-        message = self.messageText.get("1.0", "end-1c").strip()
+        message = self.contactMessage.get("1.0", "end-1c").strip()
 
         # Validation
-        if not all([name, email, message]):
+        if not all([email, message]):
             self.statusLabel.configure(text="Please fill in all fields", text_color="#FFB6C1")
             return
 
@@ -1262,12 +1262,12 @@ class HelpContactPage(BasePage):
 
         try:
             # Save to database
-            self.db_manager.save_contact(name, email, message)
+            self.db_manager.save_contact(email, message)
             
             # Clear form
-            self.nameEntry.delete(0, 'end')
             self.emailEntry.delete(0, 'end')
-            self.messageText.delete("1.0", "end")
+            self.contactMessage.delete("1.0", "end")
+            self.contactMessage.insert("1.0", "Enter Message...")
             
             # Show success message
             self.statusLabel.configure(text="Message sent successfully!", text_color="#90EE90")

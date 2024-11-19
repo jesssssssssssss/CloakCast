@@ -13,6 +13,7 @@ class MainApp(ctk.CTk):
 
         loadLalezarFont()
         loadSnigletFont()
+        loadInterFont()
         
         # Adding sidebar state to mainapp for consistency
         self.sidebarExpanded = False
@@ -48,6 +49,18 @@ def loadLalezarFont():
 
     except Exception as e:
         print(f"error loading lalezar font: {e}")
+        return False
+    
+def loadInterFont():
+    try:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        fontPath = os.path.join(current_dir, "fonts", "Inter-VariableFont_opsz,wght.ttf")
+
+        ctk.FontManager.load_font(fontPath)
+
+        return True
+    except Exception as e:
+        print (f"error laoding Inter font: {e}")
         return False
     
 def loadSnigletFont():
