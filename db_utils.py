@@ -10,10 +10,10 @@ class DatabaseManager:
         """Initialize the database and create the contacts table if it doesn't exist"""
         with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
+            # Remove the name field from the table schema
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS contacts (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
                     email TEXT NOT NULL,
                     message TEXT NOT NULL,
                     submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -21,14 +21,15 @@ class DatabaseManager:
             ''')
             conn.commit()
 
-    def save_contact(self, name, email, message):
+    def save_contact(self, email, message):
         """Save a new contact form submission to the database"""
         with sqlite3.connect(self.db_name) as conn:
             cursor = conn.cursor()
+            # Modified to only take email and message parameters
             cursor.execute('''
-                INSERT INTO contacts (name, email, message)
-                VALUES (?, ?, ?)
-            ''', (name, email, message))
+                INSERT INTO contacts (email, message)
+                VALUES (?, ?)
+            ''', (email, message))
             conn.commit()
             return cursor.lastrowid
         
