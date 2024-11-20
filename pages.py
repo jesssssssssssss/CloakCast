@@ -371,7 +371,7 @@ class EmbedPage(BasePage):
                     messagebox.showerror("Error", "Please select a Cover Media")
                     return False
 
-                imgName = 'smile.png'
+                imgName = 'Images\\Cone.png'
                 audio = load(audioPath) #Opens the audio
 
                 #Opens the image and puts the encrypted data inside saves it
