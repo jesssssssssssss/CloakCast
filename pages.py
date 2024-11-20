@@ -448,7 +448,8 @@ class EmbedPage(BasePage):
         audioFileLabel.grid(row=0, column=0, padx=10, pady=6)
 
         #Delete button for chosen audio file display
-        deleteButton = ctk.CTkButton(master=audioFileLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", command= deleteAudio, font=("Sniglet", 22)) #Trash icon button placeholder
+        deleteButton = ctk.CTkButton(master=audioFileLabel, text='x', height=0.5, width=1, hover_color="#FFFFFF", text_color="#a63a50", fg_color="#FFFFFF", 
+                                     command= deleteAudio, font=("Sniglet", 22)) 
         deleteButton.grid(row=0, column=0, sticky='e', padx=(0,20), pady=(0,3))
         
         #Access Code--------------------
@@ -670,13 +671,6 @@ class EmbedSuccessPage(BasePage):
                                          font=('Lalezar', 30),
                                          command= returnAction)
         returnHomeButton.grid(row=1, column=0, padx=(130,0))
- 
-        #Displaying audio file path
-        #audioFileLabel = ctk.CTkLabel(master=self,
-         #                           text= ,
-          #                          corner_radius = 10,
-          #                          fg_color= '#000000')
-        #audioFileLabel.grid(row=1, column=0, columnspan=2, padx=20, pady=(10, 20), sticky="ew")
         
 class ExtractPage(BasePage):
 
