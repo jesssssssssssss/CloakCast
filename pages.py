@@ -293,7 +293,7 @@ class EmbedPage(BasePage):
                 self.fullAudioPath = filePath  
                 print(f"Selected file: {filePath}")
 
-        #Function to delete selected text file
+        #Function to browse and open text file
         def openTextFile():
             filePath = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
             if filePath:
