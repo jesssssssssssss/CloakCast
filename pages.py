@@ -457,7 +457,7 @@ class EmbedPage(BasePage):
         #Header
        
         accessCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Access Code', text_color='#a63a50', font=('lalezar', 40))
-        accessCodeLabel.grid(row=4, column=0, padx=(40,0), pady=(20,5))  # Reduced bottom padding
+        accessCodeLabel.grid(row=4, column=0, padx=(40,0), pady=(10,5))  # Reduced bottom padding
 
         enterCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Enter Code', text_color='#393839', font=('lalezar', 20))
         enterCodeLabel.grid(row=5, column=0, padx=(40,0), pady=(0,5))  
@@ -511,6 +511,9 @@ class EmbedPage(BasePage):
         )
         viewAccessCode.grid(row=0, column=0, sticky='e', padx=(0, 10))
         
+        confirmCodeLabel = ctk.CTkLabel(master=embedPageContent, text='Re-Enter Code', text_color='#393839', font=('lalezar', 20))
+        confirmCodeLabel.grid(row=7, column=0, padx=(40,0), pady=(0,5)) 
+
         # Confirm Access Code section
         ConfirmAccessCodeFrame = ctk.CTkFrame(
             embedPageContent,
@@ -792,14 +795,13 @@ class ExtractPage(BasePage):
         audioUploadButton = ctk.CTkButton(
             extractPageContent,
             text='Upload Audio',
-            text_color='#393839',
-            border_width= 7,
+            text_color='#ffffff',
             border_color='#393839',
             corner_radius = 100,
-            fg_color= '#FFFFFF',
+            fg_color= '#393839',
             font=('Lalezar', 24),
             command=openAudioFile,
-            height=50) 
+            height=40) 
         audioUploadButton.grid(row=3, column=1, padx=(0,260), pady=(100,20))
  
         audioFileLabelFrame = ctk.CTkFrame(
